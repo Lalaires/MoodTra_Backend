@@ -1,11 +1,15 @@
 # API
 fastapi==0.115.0
 uvicorn==0.30.6
-mangum==0.17.0
+#mangum==0.17.0
 python-dotenv==1.0.1
+pydantic==2.8.2
+#asyncpg==0.29.0
+sqlalchemy>=2.0
+psycopg2-binary>=2.9
 
 # AI
-huggingface_hub==0.24.6
-transformers==4.44.2
-datasets==2.21.0
-torch==2.4.0
+#huggingface_hub==0.24.6
+#transformers==4.44.2
+#datasets==2.21.0
+#torch==2.4.0
