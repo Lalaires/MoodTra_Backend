@@ -13,4 +13,4 @@ transformers
 datasets
 torch --index-url https://download.pytorch.org/whl/cpu
 contractions
-google-genai hhhhh
+google-genai
