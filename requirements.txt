@@ -1,7 +1,7 @@
 # API
 fastapi==0.115.0
 uvicorn==0.30.6
-mangum==0.17.0
+mangum==0.19.0
 python-dotenv==1.0.1
 
 # AI

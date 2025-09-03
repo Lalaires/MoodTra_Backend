@@ -1,0 +1,48 @@
+name: FastAPI CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install awslambdaric
+
+      - name: Package Lambda
+        run: |
+          mkdir -p package
+          cp -r api package/
+          cp requirements.txt package/
+          cd package
+          pip install -r requirements.txt -t .
+          zip -r ../lambda.zip .
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name FastAPI \
+            --zip-file fileb://lambda.zip

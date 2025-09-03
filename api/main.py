@@ -1,6 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 from .routers import chat
 
 app = FastAPI(title="MindPal API", version="1.0.0")
@@ -25,3 +26,5 @@ def health():
 
 
 app.include_router(chat.router)
+
+handler = Mangum(app)
