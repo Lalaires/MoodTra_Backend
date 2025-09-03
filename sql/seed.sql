@@ -10,7 +10,16 @@ INSERT INTO emotion_label (emotion_id, emoji, name, category) VALUES
  (4,'😃','joy','positive'),
  (5,'😐','neutral','neutral'),
  (6,'😭','sadness','negative'),
- (7,'😲','surprise','ambiguous');
+ (7,'😲','surprise','ambiguous'),
+ (8 ,'🙂','happy','positive'),
+ (9 ,'😢','sad','negative'),
+ (10,'😰','anxious','negative'),
+ (11,'🤩','excited','positive'),
+ (12,'😕','confused','ambiguous'),
+ (13,'😔','lonely','negative'),
+ (14,'😌','proud','positive'),
+ (15,'😤','frustrated','negative'),
+ (16,'🧘','calm','neutral');
 
 -- CHAT_SESSION
 INSERT INTO chat_session (session_id, account_id)

@@ -26,15 +26,15 @@ CREATE TABLE emotion_label (
   category 		VARCHAR(50) NOT NULL
 );
 
+CREATE INDEX IF NOT EXISTS idx_emotion_label_emoji ON emotion_label(emoji);
+
 -- CHAT_MESSAGE
 CREATE TABLE chat_message (
   message_id    		UUID PRIMARY KEY,
   session_id    		UUID REFERENCES chat_session(session_id) ON DELETE SET NULL,
   message_ts            TIMESTAMPTZ NOT NULL DEFAULT now(),
   message_role          VARCHAR(50) NOT NULL CHECK (message_role IN ('child','assistant')),
-  message_text          TEXT NOT NULL,
-  message_emotion_id 	SMALLINT REFERENCES emotion_label(emotion_id),
-  confidence    		NUMERIC(4,3)
+  message_text          TEXT NOT NULL
 );
 CREATE INDEX idx_chat_message_acc_ts ON chat_message(session_id, message_ts);
 
@@ -54,8 +54,7 @@ CREATE INDEX idx_mood_log_account_day_created ON mood_log (account_id, mood_date
 
 -- Nice-to-have checks
 ALTER TABLE emotion_label
+  ADD CONSTRAINT uq_emotion_label_emoji UNIQUE (emoji),
   ADD CONSTRAINT emotion_category_chk CHECK (category IN ('positive','negative','neutral','ambiguous'));
-ALTER TABLE chat_message
-  ADD CONSTRAINT chat_message_confidence_chk CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1));
 ALTER TABLE mood_log
   ADD CONSTRAINT mood_log_intensity_chk CHECK (mood_intensity BETWEEN 1 AND 3);

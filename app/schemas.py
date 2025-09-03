@@ -7,8 +7,6 @@ from datetime import datetime, date
 class ChatMessageIn(BaseModel):
     message_text: str = Field(min_length=1)
     message_role: str = Field(pattern="^(child|assistant)$")
-    message_emotion_id: Optional[int] = None
-    confidence: Optional[float] = Field(default=None, ge=0, le=1)
 
 class ChatMessageOut(BaseModel):
     message_id: UUID
@@ -16,22 +14,13 @@ class ChatMessageOut(BaseModel):
     message_ts: datetime
     message_role: str
     message_text: str
-    message_emotion_id: Optional[int]
-    confidence: Optional[float]
 
 # ---------- Mood ----------
 class MoodCreate(BaseModel):
     mood_date: date | None = None
     mood_emoji: str
-    mood_intensity: int = Field(ge=1, le=5)
+    mood_intensity: int = Field(ge=1, le=3)
     note: Optional[str] = None
-    linked_emotion_id: Optional[int] = None
-
-class MoodUpdate(BaseModel):
-    mood_emoji: Optional[str] = None
-    mood_intensity: Optional[int] = Field(default=None, ge=1, le=5)
-    note: Optional[str] = None
-    linked_emotion_id: Optional[int] = None
 
 class MoodOut(BaseModel):
     mood_id: UUID

@@ -34,8 +34,6 @@ def post_message(
         message_ts=now,
         message_role=payload.message_role,
         message_text=payload.message_text,
-        message_emotion_id=payload.message_emotion_id,
-        confidence=payload.confidence,
     )
     db.add(msg)      # now "db" is a real Session
     db.flush()

@@ -41,8 +41,6 @@ class ChatMessage(Base):
     message_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     message_role: Mapped[str] = mapped_column(String(50), nullable=False)
     message_text: Mapped[str] = mapped_column(Text, nullable=False)
-    message_emotion_id: Mapped[int | None] = mapped_column(ForeignKey("emotion_label.emotion_id"))
-    confidence: Mapped[float | None] = mapped_column(Numeric(4, 3))
 
 # Table: mood_log
 class MoodLog(Base):
