@@ -10,4 +10,4 @@ transformers==4.44.2
 datasets==2.21.0
 torch==2.4.0
 contractions==0.0.55
-google==3.16.1
+google==3.0.0
