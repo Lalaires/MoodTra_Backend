@@ -30,7 +30,7 @@ jobs:
           mkdir -p package
           cp -r api package/
           cp requirements.txt package/
-          cp AI.pipeline.py package/
+          cp ./AI/pipeline.py package/
           cd package
           pip install -r requirements.txt -t .
           zip -r ../lambda.zip .
