@@ -9,7 +9,7 @@ from ..models import MoodLog, EmotionLabel
 from ..schemas import MoodCreate, MoodOut, MoodSummaryItem
 from ..utils import start_of_day, end_of_day, to_utc_now
 
-router = APIRouter(prefix="/mood", tags=["mood"])
+router = APIRouter(prefix="/api", tags=["mood"])
 
 # EndPoint for moods each day for date range
 @router.get("/entries", response_model=list[MoodOut])

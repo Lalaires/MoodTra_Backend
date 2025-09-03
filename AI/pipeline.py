@@ -28,7 +28,7 @@ class MindPal_Pipeline:
             top_k=None
         )
 
-        self.SLANG_MAP = self.load_slang_dataset()
+        self.SLANG_MAP = self.load_slang_dataset() or {}
 
 
     def normalize_text(self, text: str) -> str:
@@ -38,7 +38,7 @@ class MindPal_Pipeline:
         t = contractions.fix(t)
         return t
 
-    def load_slang_dataset(self) -> Dict[str, List[str]]:
+    def load_slang_dataset(self) -> Dict[str, str]:
         try:
             ds = load_dataset("MLBtrio/genz-slang-dataset", split="train")
             slang_map = {}
@@ -53,7 +53,7 @@ class MindPal_Pipeline:
             return None
 
     def detect_and_map_slang(self, text: str) -> str:
-        for s in self.SLANG_MAP:
+        for s in self.SLANG_MAP if self.SLANG_MAP else {}:
             if re.search(r"\b" + re.escape(s) + r"\b", text.lower()):
                 slang_token, meaning = s, self.SLANG_MAP[s]
                 replace = f"{slang_token} ({meaning})"
@@ -64,7 +64,21 @@ class MindPal_Pipeline:
         emotion = self.emotion_classifier(text)
         return emotion[0]
 
-    def generate_response(self, text: str, detected_emotion: str) -> str:
+    def generate_response(self, text: str, detected_emotion: str, history_messages: List[Tuple[str, str]] | None = None) -> str:
+        # Build compact conversation context from history
+        history_context = ""
+        if history_messages:
+            # Router already limits and orders history; use as-is
+            recent = history_messages
+            lines = []
+            for role, msg in recent:
+                # guard against None and trim overly long single messages
+                safe_msg = (msg or "").strip()
+                if len(safe_msg) > 800:
+                    safe_msg = safe_msg[:800] + " …"
+                lines.append(f"{role}: {safe_msg}")
+            history_context = "\n".join(lines)
+
         prompt = f"""
         You are MindPal, a supportive wellbeing chatbot for 13-15 year-old Australian teens.
         Your responses should be:
@@ -85,7 +99,8 @@ class MindPal_Pipeline:
         - If user asks questions that are unrelated to your purpose, politely decline to answer and redirect the conversation back
 
         Current emotion(s) detected: {detected_emotion}
-        user's message: {text}
+        Conversation context: {history_context}
+        Child's current message: {text}
 
         Always rethink and double check your answer before responding.
         When you completely understand you can start the session.
@@ -95,13 +110,13 @@ class MindPal_Pipeline:
             response = self.client.models.generate_content(model=self.model, contents=prompt)
         except Exception as e:
             print(f"[WARN] Failed to generate response: {e}")
-            return None
+            return "I'm sorry, I'm having trouble generating a response. Please try again later."
 
         return response.text
 
-    def chat(self, text: str) -> str:
+    def chat(self, text: str, history_messages: List[Tuple[str, str]] | None = None) -> str:
         text = self.normalize_text(text)
         text = self.detect_and_map_slang(text)
         detected_emotion = self.emotion_detection(text)
-        reply = self.generate_response(text, detected_emotion)
+        reply = self.generate_response(text, detected_emotion, history_messages=history_messages)
         return reply
