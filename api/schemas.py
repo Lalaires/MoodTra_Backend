@@ -4,16 +4,12 @@ from uuid import UUID
 from datetime import datetime, date
 
 # ---------- Chat ----------
-class ChatMessageIn(BaseModel):
-    message_text: str = Field(min_length=1)
-    message_role: str = Field(pattern="^(child|assistant)$")
 
-class ChatMessageOut(BaseModel):
-    message_id: UUID
-    session_id: Optional[UUID]
-    message_ts: datetime
-    message_role: str
+class ChatAskIn(BaseModel):
     message_text: str
+
+class ChatReplyOut(BaseModel):
+    reply_text: str
 
 # ---------- Mood ----------
 class MoodCreate(BaseModel):
@@ -25,7 +21,7 @@ class MoodCreate(BaseModel):
 class MoodOut(BaseModel):
     mood_id: UUID
     account_id: UUID
-    mood_date: datetime
+    mood_date: date
     mood_emoji: str
     mood_intensity: int
     note: Optional[str]
@@ -33,5 +29,6 @@ class MoodOut(BaseModel):
     created_at: datetime
 
 class MoodSummaryItem(BaseModel):
+    emotion_id: Optional[int]
     emoji: str
     count: int
