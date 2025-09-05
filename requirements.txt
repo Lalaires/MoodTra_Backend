@@ -1,7 +1,6 @@
 # API
-fastapi
+fastapi[standard]
 uvicorn
-mangum
 python-dotenv
 pydantic
 asyncpg

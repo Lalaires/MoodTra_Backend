@@ -2,54 +2,19 @@ name: FastAPI CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  CI:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      # Checkout repo
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Package Lambda
-        run: |
-          mkdir -p package
-          cp -r api package/
-          cp requirements.txt package/
-          cp ./AI/pipeline.py package/
-          cd package
-          pip install -r requirements.txt -t .
-          zip -r ../lambda.zip .
-
-      - name: Upload zip file artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: lambda.zip
-          path: lambda.zip
-
-  CD:
-    runs-on: ubuntu-latest
-    needs: [CI]
-
-    steps:
-      - name: Install AWS CLI
-        uses: unfor19/install-aws-cli-action@v1
-        with:
-          version: 2
-
+      # Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -57,14 +22,34 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
-      - name: Download zip file artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: lambda.zip
-          path: .
+      # Login to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Deploy to Lambda
+      # Build and tag Docker image
+      - name: Build Docker image
         run: |
+          IMAGE_TAG=latest
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=mindpal-api
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+      # Push Docker image to Amazon ECR
+      - name: Push to Amazon ECR
+        run: |
+          IMAGE_TAG=latest
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=mindpal-api
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      # Update Lambda function to use new image
+      - name: Update Lambda Function
+        run: |
+          IMAGE_TAG=latest
+          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY=mindpal-api
           aws lambda update-function-code \
-            --function-name FastAPI \
-            --zip-file fileb://lambda.zip
+            --function-name FastAPIContainer \
+            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
