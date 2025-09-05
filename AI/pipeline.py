@@ -14,9 +14,7 @@ class MindPal_Pipeline:
 
         GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
         if not GOOGLE_API_KEY:
-            raise RuntimeError(
-                "Missing GOOGLE_API_KEY in environment variables."
-            )
+            raise RuntimeError("Missing GOOGLE_API_KEY in environment variables.")
 
         self.model = "gemini-2.5-pro"
 
@@ -25,16 +23,15 @@ class MindPal_Pipeline:
         self.emotion_classifier = pipeline(
             "text-classification",
             model="j-hartmann/emotion-english-distilroberta-base",
-            top_k=None
+            top_k=None,
         )
 
         self.SLANG_MAP = self.load_slang_dataset() or {}
 
-
     def normalize_text(self, text: str) -> str:
         t = " ".join(text.split()).strip()
         t = t.lower()
-        t = t.translate(str.maketrans('', '', string.punctuation))
+        t = t.translate(str.maketrans("", "", string.punctuation))
         t = contractions.fix(t)
         return t
 
@@ -57,14 +54,24 @@ class MindPal_Pipeline:
             if re.search(r"\b" + re.escape(s) + r"\b", text.lower()):
                 slang_token, meaning = s, self.SLANG_MAP[s]
                 replace = f"{slang_token} ({meaning})"
-                text = re.sub(r"\b" + re.escape(slang_token) + r"\b", replace, text, flags=re.IGNORECASE)
+                text = re.sub(
+                    r"\b" + re.escape(slang_token) + r"\b",
+                    replace,
+                    text,
+                    flags=re.IGNORECASE,
+                )
         return text
 
     def emotion_detection(self, text: str) -> str:
         emotion = self.emotion_classifier(text)
         return emotion[0]
 
-    def generate_response(self, text: str, detected_emotion: str, history_messages: List[Tuple[str, str]] | None = None) -> str:
+    def generate_response(
+        self,
+        text: str,
+        detected_emotion: str,
+        history_messages: List[Tuple[str, str]] | None = None,
+    ) -> str:
         # Build compact conversation context from history
         history_context = ""
         if history_messages:
@@ -75,7 +82,7 @@ class MindPal_Pipeline:
                 # guard against None and trim overly long single messages
                 safe_msg = (msg or "").strip()
                 if len(safe_msg) > 800:
-                    safe_msg = safe_msg[:800] + " …"
+                    safe_msg = safe_msg[:800] + " ..."
                 lines.append(f"{role}: {safe_msg}")
             history_context = "\n".join(lines)
 
@@ -107,16 +114,22 @@ class MindPal_Pipeline:
         """
 
         try:
-            response = self.client.models.generate_content(model=self.model, contents=prompt)
+            response = self.client.models.generate_content(
+                model=self.model, contents=prompt
+            )
         except Exception as e:
             print(f"[WARN] Failed to generate response: {e}")
             return "I'm sorry, I'm having trouble generating a response. Please try again later."
 
         return response.text
 
-    def chat(self, text: str, history_messages: List[Tuple[str, str]] | None = None) -> str:
+    def chat(
+        self, text: str, history_messages: List[Tuple[str, str]] | None = None
+    ) -> str:
         text = self.normalize_text(text)
         text = self.detect_and_map_slang(text)
         detected_emotion = self.emotion_detection(text)
-        reply = self.generate_response(text, detected_emotion, history_messages=history_messages)
+        reply = self.generate_response(
+            text, detected_emotion, history_messages=history_messages
+        )
         return reply
