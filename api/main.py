@@ -5,19 +5,24 @@ from .routers import chat, mood
 
 app = FastAPI(title="MindPal API", version="1.0.0")
 
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://mindpal.me",
+    "https://www.mindpal.me",
+    "https://iteration1.mindpal.me",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=False,
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Accept", "Authorization"],
 )
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
 
 app.include_router(chat.router)
 app.include_router(mood.router)
