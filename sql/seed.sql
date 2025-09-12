@@ -4,14 +4,14 @@ VALUES ('00000000-0000-0000-0000-00000000C0DE', 'Liam', 'child');
 
 -- EMOTION_LABEL
 INSERT INTO emotion_label (emotion_id, emoji, name, category) VALUES
- (1,'😡','anger','negative'),
+ (1,'😠','anger','negative'),
  (2,'🤢','disgust','negative'),
  (3,'😨','fear','negative'),
  (4,'😃','joy','positive'),
  (5,'😐','neutral','neutral'),
  (6,'😭','sadness','negative'),
  (7,'😲','surprise','ambiguous'),
- (8 ,'🙂','happy','positive'),
+ (8 ,'😊','happy','positive'),
  (9 ,'😢','sad','negative'),
  (10,'😰','anxious','negative'),
  (11,'🤩','excited','positive'),

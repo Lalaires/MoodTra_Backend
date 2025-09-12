@@ -47,7 +47,8 @@ CREATE TABLE mood_log (
   mood_intensity    SMALLINT NOT NULL,
   note              TEXT,
   linked_emotion_id SMALLINT REFERENCES emotion_label(emotion_id),
-  created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_mood_log_account_day_created ON mood_log (account_id, mood_date, created_at DESC);
@@ -56,5 +57,7 @@ CREATE INDEX idx_mood_log_account_day_created ON mood_log (account_id, mood_date
 ALTER TABLE emotion_label
   ADD CONSTRAINT uq_emotion_label_emoji UNIQUE (emoji),
   ADD CONSTRAINT emotion_category_chk CHECK (category IN ('positive','negative','neutral','ambiguous'));
+
 ALTER TABLE mood_log
-  ADD CONSTRAINT mood_log_intensity_chk CHECK (mood_intensity BETWEEN 1 AND 3);
+  ADD CONSTRAINT mood_log_intensity_chk CHECK (mood_intensity BETWEEN 1 AND 3),
+  ADD CONSTRAINT uq_mood_log_account_date UNIQUE (account_id, mood_date);
