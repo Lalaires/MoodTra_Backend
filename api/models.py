@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date
+from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text
 from uuid import uuid4, UUID as UUIDT
 from datetime import datetime, date
 
@@ -45,11 +45,18 @@ class ChatMessage(Base):
 # Table: mood_log
 class MoodLog(Base):
     __tablename__ = "mood_log"
-    mood_id: Mapped[UUIDT] = mapped_column(primary_key=True)
+    __table_args__ = (
+        UniqueConstraint("account_id", "mood_date", name="uq_mood_log_account_date"),
+    )
+
+    mood_id: Mapped[UUIDT] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
     account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
     mood_date: Mapped[date] = mapped_column(Date, nullable=False)
     mood_emoji: Mapped[str] = mapped_column(Text, nullable=False)
     mood_intensity: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     note: Mapped[str | None] = mapped_column(Text)
     linked_emotion_id: Mapped[int | None] = mapped_column(ForeignKey("emotion_label.emotion_id"))
-    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
+
+    # timestamps
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())

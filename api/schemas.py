@@ -13,7 +13,12 @@ class ChatReplyOut(BaseModel):
 
 # ---------- Mood ----------
 class MoodCreate(BaseModel):
-    mood_date: date | None = None
+    mood_date: date                      
+    mood_emoji: str
+    mood_intensity: int = Field(ge=1, le=3)
+    note: Optional[str] = None
+
+class MoodUpdate(BaseModel):
     mood_emoji: str
     mood_intensity: int = Field(ge=1, le=3)
     note: Optional[str] = None
@@ -27,6 +32,7 @@ class MoodOut(BaseModel):
     note: Optional[str]
     linked_emotion_id: Optional[int]
     created_at: datetime
+    updated_at: datetime                  
 
 class MoodSummaryItem(BaseModel):
     emotion_id: Optional[int]
