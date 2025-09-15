@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: ${{ vars.ap-southeast-4 }}           # e.g., ap-southeast-4
-  ECR_REPOSITORY: ${{ vars.mindpal-backend-test }}   # e.g., mindpal-backend-test
+  AWS_REGION: ${{ vars.ap-southeast-4 }}                 # e.g., ap-southeast-4
+  ECR_REPOSITORY: ${{ vars.mindpal-backend-test }}         # e.g., mindpal-backend-test
   BASE_FUNCTION_NAME: ${{ vars.MindpalBackend }} # e.g., MindpalBackend
 
 jobs:
@@ -49,8 +49,23 @@ jobs:
           echo "FN_NAME=${FN_NAME}" >> $GITHUB_OUTPUT
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_OUTPUT
 
-      - name: Build image
-        run: docker build --platform linux/amd64 -t "${{ steps.vars.outputs.IMAGE_URI }}" .
+      - name: Create temp Lambda Dockerfile (do not modify repo Dockerfile)
+        run: |
+          cat > Dockerfile.lambda <<'EOF'
+          FROM python:3.12-slim
+          COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt/extensions/lambda-adapter
+          ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+          WORKDIR /app
+          COPY requirements.txt /app/requirements.txt
+          RUN pip install --no-cache-dir -r /app/requirements.txt
+          COPY api /app/api
+          COPY AI  /app/AI
+          ENV PORT=8000
+          CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+          EOF
+
+      - name: Build image (using temp Dockerfile)
+        run: docker build --platform linux/amd64 -f Dockerfile.lambda -t "${{ steps.vars.outputs.IMAGE_URI }}" .
 
       - name: Push image
         run: docker push "${{ steps.vars.outputs.IMAGE_URI }}"
