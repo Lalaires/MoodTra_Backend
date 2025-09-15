@@ -17,7 +17,7 @@ app.add_middleware(
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Accept", "Authorization", "x-session-id"],
+    allow_headers=["Content-Type", "Accept", "Authorization", "x-session-id", "x-account-id"],
 )
 
 @app.get("/health")
