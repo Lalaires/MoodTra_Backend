@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}
   LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # optional; leave blank to use 3008
