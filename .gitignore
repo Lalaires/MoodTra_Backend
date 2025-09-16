@@ -5,6 +5,7 @@ ecr_cred
 .github/
 .env.example
 
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -12,6 +13,7 @@ __pycache__/
 .env
 .venv/
 .envrc
+
 
 # C extensions
 *.so
@@ -35,6 +37,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+aws/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

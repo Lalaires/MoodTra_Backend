@@ -1,55 +1,93 @@
-name: FastAPI CI/CD
+name: Deploy MindPal Backend (main → AWS Lambda)
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+
+# Avoid overlapping main deploys
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}                 # e.g., ap-southeast-4
+  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}         # e.g., mindpal-backend
+  LAMBDA_FUNCTION_NAME: ${{ vars.BASE_FUNCTION_NAME }} # e.g., MindpalBackend
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout repo
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Configure AWS credentials
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # Login to Amazon ECR
       - name: Login to Amazon ECR
-        id: login-ecr
+        id: ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      # Build and tag Docker image
-      - name: Build Docker image
+      - name: Ensure ECR repository exists
         run: |
-          IMAGE_TAG=latest
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY=mindpal-api
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          aws ecr describe-repositories --repository-names "${{ env.ECR_REPOSITORY }}" >/dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "${{ env.ECR_REPOSITORY }}"
 
-      # Push Docker image to Amazon ECR
-      - name: Push to Amazon ECR
+      - name: Build image
+        id: build
         run: |
-          IMAGE_TAG=latest
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY=mindpal-api
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          IMAGE_TAG=sha-${GITHUB_SHA::12}
+          REG="${{ steps.ecr.outputs.registry }}"
+          IMAGE_URI="${REG}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
+          IMAGE_URI_LATEST="${REG}/${{ env.ECR_REPOSITORY }}:latest"
+          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_OUTPUT
+          echo "IMAGE_URI_LATEST=$IMAGE_URI_LATEST" >> $GITHUB_OUTPUT
+          docker build --platform linux/amd64 -t "$IMAGE_URI" -t "$IMAGE_URI_LATEST" .
 
-      # Update Lambda function to use new image
-      - name: Update Lambda Function
+      - name: Push image
         run: |
-          IMAGE_TAG=latest
-          ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY=mindpal-api
+          docker push "${{ steps.build.outputs.IMAGE_URI }}"
+          docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
+
+      - name: Create function if missing
+        id: create
+        shell: bash
+        run: |
+          if aws lambda get-function --function-name "${{ env.BASE_FUNCTION_NAME }}" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            aws lambda create-function \
+              --function-name "${{ env.BASE_FUNCTION_NAME }}" \
+              --package-type Image \
+              --code ImageUri="${{ steps.build.outputs.IMAGE_URI }}" \
+              --role "${{ vars.LAMBDA_EXEC_ROLE }}" \
+              --memory-size 3072 \
+              --timeout 60
+          fi
+
+      - name: Update function code
+        if: steps.create.outputs.exists == 'true'
+        run: |
           aws lambda update-function-code \
-            --function-name FastAPIContainer \
-            --image-uri $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            --function-name "${{ env.BASE_FUNCTION_NAME }}" \
+            --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
+            --publish
 
+      - name: Ensure Function URL (public, for testing)
+        run: |
+          set -e
+          if aws lambda get-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" >/dev/null 2>&1; then
+            aws lambda update-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --auth-type NONE
+          else
+            aws lambda create-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --auth-type NONE
+          fi
+          URL=$(aws lambda get-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --query FunctionUrl -o text)
+          echo "Function URL: $URL"
