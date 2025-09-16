@@ -14,17 +14,17 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}        # keep this name since your team uses it
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}        # e.g., mindpal-backend
-  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }} # e.g., MindpalBackend
+  AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}
+  LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # optional; leave blank to use 3008
+  LAMBDA_TIMEOUT: ${{ secrets.LAMBDA_TIMEOUT }}           # optional; leave blank to use 60
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # Use OIDC (recommended). If you must use access keys, see note below.
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -69,8 +69,8 @@ jobs:
               --package-type Image \
               --code ImageUri="${{ steps.build.outputs.IMAGE_URI }}" \
               --role "${{ secrets.LAMBDA_EXEC_ROLE }}" \
-              --memory-size 3072 \
-              --timeout 60
+              --memory-size "${LAMBDA_MEMORY_SIZE:-3008}" \
+              --timeout "${LAMBDA_TIMEOUT:-60}"
           fi
 
       - name: Update function code
@@ -80,6 +80,14 @@ jobs:
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
             --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
             --publish
+
+      # Ensure config on every run (in case you change memory/timeout)
+      - name: Ensure function configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name "${{ env.BASE_FUNCTION_NAME }}" \
+            --memory-size "${LAMBDA_MEMORY_SIZE:-3008}" \
+            --timeout "${LAMBDA_TIMEOUT:-60}"
 
       - name: Ensure Function URL (public, for testing)
         run: |
