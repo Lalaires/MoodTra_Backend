@@ -16,7 +16,7 @@ concurrency:
 env:
   AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}        # keep this name since your team uses it
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}        # e.g., mindpal-backend
-  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}# e.g., MindpalBackend
+  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }} # e.g., MindpalBackend
 
 jobs:
   deploy:
@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Use OIDC (recommended). If you must use access keys, see note below.
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -50,18 +51,6 @@ jobs:
           echo "IMAGE_URI_LATEST=$IMAGE_URI_LATEST" >> $GITHUB_OUTPUT
           docker build --platform linux/amd64 -t "$IMAGE_URI" -t "$IMAGE_URI_LATEST" .
 
-      # NEW: derive and validate function name
-      - name: Derive names
-        id: names
-        run: |
-          RAW_FN="${{ env.BASE_FUNCTION_NAME }}"
-          FN="$(echo "$RAW_FN" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"  # trim
-          if ! echo "$FN" | grep -Eq '^[A-Za-z0-9-_]{1,64}$'; then
-            echo "Invalid BASE_FUNCTION_NAME: '$FN'. Only letters, numbers, hyphen, underscore allowed, max 64 chars."
-            exit 1
-          fi
-          echo "FN_NAME=$FN" >> $GITHUB_OUTPUT
-
       - name: Push image
         run: |
           docker push "${{ steps.build.outputs.IMAGE_URI }}"
@@ -71,13 +60,12 @@ jobs:
         id: create
         shell: bash
         run: |
-          FN="${{ steps.names.outputs.FN_NAME }}"
-          if aws lambda get-function --function-name "$FN" >/dev/null 2>&1; then
+          if aws lambda get-function --function-name "${{ env.BASE_FUNCTION_NAME }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
             aws lambda create-function \
-              --function-name "$FN" \
+              --function-name "${{ env.BASE_FUNCTION_NAME }}" \
               --package-type Image \
               --code ImageUri="${{ steps.build.outputs.IMAGE_URI }}" \
               --role "${{ secrets.LAMBDA_EXEC_ROLE }}" \
@@ -88,20 +76,18 @@ jobs:
       - name: Update function code
         if: steps.create.outputs.exists == 'true'
         run: |
-          FN="${{ steps.names.outputs.FN_NAME }}"
           aws lambda update-function-code \
-            --function-name "$FN" \
+            --function-name "${{ env.BASE_FUNCTION_NAME }}" \
             --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
             --publish
 
       - name: Ensure Function URL (public, for testing)
         run: |
           set -e
-          FN="${{ steps.names.outputs.FN_NAME }}"
-          if aws lambda get-function-url-config --function-name "$FN" >/dev/null 2>&1; then
-            aws lambda update-function-url-config --function-name "$FN" --auth-type NONE
+          if aws lambda get-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" >/dev/null 2>&1; then
+            aws lambda update-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --auth-type NONE
           else
-            aws lambda create-function-url-config --function-name "$FN" --auth-type NONE
+            aws lambda create-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --auth-type NONE
           fi
-          URL=$(aws lambda get-function-url-config --function-name "$FN" --query FunctionUrl -o text)
+          URL=$(aws lambda get-function-url-config --function-name "${{ env.BASE_FUNCTION_NAME }}" --query FunctionUrl -o text)
           echo "Function URL: $URL"
