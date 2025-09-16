@@ -9,15 +9,14 @@ permissions:
   id-token: write
   contents: read
 
-# Avoid overlapping main deploys
 concurrency:
   group: deploy-main
   cancel-in-progress: true
 
 env:
-  AWS_REGION: ${{ vars.AWS_REGION }}                 # e.g., ap-southeast-4
-  ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}         # e.g., mindpal-backend
-  LAMBDA_FUNCTION_NAME: ${{ vars.BASE_FUNCTION_NAME }} # e.g., MindpalBackend
+  AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}        # keep this name since your team uses it
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}        # e.g., mindpal-backend
+  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}# e.g., MindpalBackend
 
 jobs:
   deploy:
@@ -25,10 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Use OIDC (recommended). If you must use access keys, see note below.
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -68,7 +68,7 @@ jobs:
               --function-name "${{ env.BASE_FUNCTION_NAME }}" \
               --package-type Image \
               --code ImageUri="${{ steps.build.outputs.IMAGE_URI }}" \
-              --role "${{ vars.LAMBDA_EXEC_ROLE }}" \
+              --role "${{ secrets.LAMBDA_EXEC_ROLE }}" \
               --memory-size 3072 \
               --timeout 60
           fi
