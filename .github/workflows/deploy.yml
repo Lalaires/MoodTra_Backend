@@ -17,8 +17,8 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
   BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}
-  LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # optional; leave blank to use 3008
-  LAMBDA_TIMEOUT: ${{ secrets.LAMBDA_TIMEOUT }}           # optional; leave blank to use 60
+  LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # 3007
+  LAMBDA_TIMEOUT: ${{ secrets.LAMBDA_TIMEOUT }}           # 60
 
 jobs:
   deploy:
@@ -47,6 +47,7 @@ jobs:
           REG="${{ steps.ecr.outputs.registry }}"
           IMAGE_URI="${REG}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
           IMAGE_URI_LATEST="${REG}/${{ env.ECR_REPOSITORY }}:latest"
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_OUTPUT
           echo "IMAGE_URI_LATEST=$IMAGE_URI_LATEST" >> $GITHUB_OUTPUT
           docker build --platform linux/amd64 -t "$IMAGE_URI" -t "$IMAGE_URI_LATEST" .
@@ -56,37 +57,24 @@ jobs:
           docker push "${{ steps.build.outputs.IMAGE_URI }}"
           docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
 
-      - name: Create function if missing
-        id: create
-        shell: bash
+      - name: Preflight – verify image in ECR
         run: |
-          if aws lambda get-function --function-name "${{ env.BASE_FUNCTION_NAME }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            aws lambda create-function \
-              --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-              --package-type Image \
-              --code ImageUri="${{ steps.build.outputs.IMAGE_URI }}" \
-              --role "${{ secrets.LAMBDA_EXEC_ROLE }}" \
-              --memory-size "${LAMBDA_MEMORY_SIZE:-3008}" \
-              --timeout "${LAMBDA_TIMEOUT:-60}"
-          fi
+          aws ecr describe-images \
+            --repository-name "${{ env.ECR_REPOSITORY }}" \
+            --image-ids imageTag="${{ steps.build.outputs.IMAGE_TAG }}" >/dev/null
 
       - name: Update function code
-        if: steps.create.outputs.exists == 'true'
         run: |
           aws lambda update-function-code \
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
             --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
             --publish
 
-      # Ensure config on every run (in case you change memory/timeout)
       - name: Ensure function configuration
         run: |
           aws lambda update-function-configuration \
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-            --memory-size "${LAMBDA_MEMORY_SIZE:-3008}" \
+            --memory-size "${LAMBDA_MEMORY_SIZE:-3007}" \
             --timeout "${LAMBDA_TIMEOUT:-60}"
 
       - name: Ensure Function URL (public, for testing)
