@@ -45,9 +45,9 @@ class ChatMessage(Base):
 # Table: mood_log
 class MoodLog(Base):
     __tablename__ = "mood_log"
-    __table_args__ = (
-        UniqueConstraint("account_id", "mood_date", name="uq_mood_log_account_date"),
-    )
+    #__table_args__ = (
+    #    UniqueConstraint("account_id", "mood_date", name="uq_mood_log_account_date"),
+    #)
 
     mood_id: Mapped[UUIDT] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
     account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
