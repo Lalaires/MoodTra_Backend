@@ -7,6 +7,7 @@ from typing import List, Dict, Tuple
 from transformers import pipeline
 from datasets import load_dataset
 from google import genai
+import torch
 
 class MindPal_Pipeline:
     def __init__(self):
@@ -101,7 +102,7 @@ class MindPal_Pipeline:
         - Keep replies within 1-3 sentences and sound like a natural conversation
         - Encourage them to talk more, ask follow up questions and let them express their feelings
         - Encourage real-life support systems and resources
-        - When appropriate and you have enough information, gently encourage the teen to talk with a trusted adult or friend
+        - When appropriate, gently encourage the teen to talk with a trusted adult or friend
         - When appropriate, suggest the most suitable coping strategy from the list of coping strategies provided
         - When providing coping strategy, output the strategy name and instruction, and ask for user feedback on the strategy
         - Avoid shaming or lecturing

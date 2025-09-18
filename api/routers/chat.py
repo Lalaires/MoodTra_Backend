@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, func, bindparam
 from sqlalchemy.orm import Session
 from uuid import uuid4
 from datetime import datetime, timezone
@@ -8,7 +8,7 @@ import logging
 from AI.pipeline import MindPal_Pipeline
 
 from ..deps import get_db, get_session_id
-from ..models import ChatMessage
+from ..models import ChatMessage, Strategy, StrategyEmotion, EmotionLabel
 from ..schemas import ChatAskIn, ChatReplyOut
 
 router = APIRouter(prefix="/api", tags=["chat"])
@@ -58,8 +58,17 @@ def chat_endpoint(
         history_rows = list(reversed(history_rows_desc))
         history: list[tuple[str, str]] = [(r.message_role, r.message_text) for r in history_rows]
 
+        emotion = get_pipeline().emo_for_strategy(message_text)
+        strategies = db.execute(
+            select(Strategy)
+            .join(StrategyEmotion, StrategyEmotion.strategy_id == Strategy.strategy_id)
+            .join(EmotionLabel, EmotionLabel.emotion_id == StrategyEmotion.emotion_id)
+            .where(func.lower(EmotionLabel.name) == func.lower(bindparam("emotion")))
+            .params(emotion=emotion)
+        ).scalars().all()
+
         # Generate reply via AI pipeline with history context
-        reply_text = get_pipeline().chat(message_text, history_messages=history)
+        reply_text = get_pipeline().chat(message_text, history_messages=history, strategies=strategies)
 
         # Store assistant's reply
         assistant_msg = ChatMessage(
