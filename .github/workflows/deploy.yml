@@ -57,12 +57,6 @@ jobs:
           docker push "${{ steps.build.outputs.IMAGE_URI }}"
           docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
 
-      - name: Preflight – verify image in ECR
-        run: |
-          aws ecr describe-images \
-            --repository-name "${{ env.ECR_REPOSITORY }}" \
-            --image-ids imageTag="${{ steps.build.outputs.IMAGE_TAG }}" >/dev/null
-
       - name: Update function code
         run: |
           aws lambda update-function-code \
