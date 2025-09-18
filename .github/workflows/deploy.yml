@@ -55,17 +55,6 @@ jobs:
         run: |
           docker push "${{ steps.build.outputs.IMAGE_URI }}"
           docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
-          
-      - name: Preflight – show region/repo and verify image in ECR
-        shell: bash
-        run: |
-          set -e
-          echo "Region: ${{ env.AWS_REGION }}"
-          echo "Repo:   ${{ env.ECR_REPOSITORY }}"
-          echo "Image:  ${{ steps.build.outputs.IMAGE_URI }}"
-          aws ecr describe-repositories --repository-names "${{ env.ECR_REPOSITORY }}" >/dev/null
-          aws ecr describe-images --repository-name "${{ env.ECR_REPOSITORY }}" \
-            --image-ids imageTag="${{ steps.build.outputs.IMAGE_TAG }}" >/dev/null
 
       - name: Create function if missing
         id: create
