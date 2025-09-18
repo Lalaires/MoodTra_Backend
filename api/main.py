@@ -2,6 +2,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import chat, mood
+from api.bootstrap import prepare_runtime_tmp
+
+prepare_runtime_tmp()
 
 app = FastAPI(title="MindPal API", version="1.0.0")
 

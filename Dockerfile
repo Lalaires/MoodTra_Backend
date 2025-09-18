@@ -6,7 +6,15 @@ COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt
 
 ENV PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/tmp \
+    HF_HOME=/tmp/hf \
+    TRANSFORMERS_CACHE=/tmp/transformers \
+    XDG_CACHE_HOME=/tmp \
+    TORCH_HOME=/tmp/torch \
+    NLTK_DATA=/tmp/nltk_data \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    NUMBA_CACHE_DIR=/tmp/numba_cache
 
 WORKDIR /app
 

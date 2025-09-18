@@ -71,8 +71,10 @@ def chat_endpoint(
         )
         db.add(assistant_msg)
         db.flush()
+        db.commit() # Many
 
         return ChatReplyOut(reply_text=reply_text)
     except Exception as e:
+        db.rollback() # Many
         logger.exception("chat ask failed")
         raise HTTPException(status_code=500, detail=f"Internal error: {type(e).__name__}: {e}")
