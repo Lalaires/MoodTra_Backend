@@ -24,3 +24,14 @@ INSERT INTO emotion_label (emotion_id, emoji, name, category) VALUES
 -- CHAT_SESSION
 INSERT INTO chat_session (session_id, account_id)
 VALUES ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-00000000C0DE');
+
+
+-- CRISIS
+INSERT INTO crisis (crisis_id, crisis_name) VALUES
+  (0, 'normal'),
+  (1, 'anxiety'),
+  (2, 'depression'),
+  (3, 'suicidal'),
+  (4, 'stress')
+  
+
