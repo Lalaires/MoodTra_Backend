@@ -62,6 +62,31 @@ ALTER TABLE mood_log
   ADD CONSTRAINT mood_log_intensity_chk CHECK (mood_intensity BETWEEN 1 AND 3),
   ADD CONSTRAINT uq_mood_log_account_date UNIQUE (account_id, mood_date);
 
+-- STRATEGY and ACTIVITY
+
+-- STRATEGY 
+CREATE TABLE public.strategy (
+	strategy_id text NOT NULL,
+	strategy_name text NULL,
+	strategy_desc text NULL,
+	strategy_duration int4 NULL,
+	strategy_requirements text NULL,
+	strategy_instruction text NULL,
+	strategy_source text NULL,
+	CONSTRAINT strategies_pk PRIMARY KEY (strategy_id)
+);
+
+-- STRATEGY_EMOTION:
+CREATE TABLE public.strategy_emotion (
+	strategy_id text NOT NULL,
+	emotion_id int2 NOT NULL,
+	CONSTRAINT emo_strategy_pk PRIMARY KEY (strategy_id, emotion_id)
+);
+
+ALTER TABLE public.strategy_emotion ADD CONSTRAINT emo_strategy_emotion_label_fk FOREIGN KEY (emotion_id) REFERENCES public.emotion_label(emotion_id);
+ALTER TABLE public.strategy_emotion ADD CONSTRAINT emo_strategy_strategies_fk FOREIGN KEY (strategy_id) REFERENCES public.strategy(strategy_id);
+
+
 -- CRISIS DETECTION
 
 -- 1) CRISIS: master list of crisis categories
@@ -118,3 +143,18 @@ CREATE TABLE crisis_alert (
 -- Index to fetch alerts for a parent dashboard efficiently
 CREATE INDEX IF NOT EXISTS idx_crisis_alert_account_ts
   ON crisis_alert(account_id, crisis_alert_ts DESC);
+
+
+
+-- Convert text JSON to JSONB (safe if values are valid JSON or null/empty)
+ALTER TABLE strategy
+  ALTER COLUMN strategy_requirements TYPE jsonb
+    USING CASE
+      WHEN strategy_requirements IS NULL OR btrim(strategy_requirements) = '' THEN NULL
+      ELSE btrim(strategy_requirements)::jsonb
+    END,
+  ALTER COLUMN strategy_source TYPE jsonb
+    USING CASE
+      WHEN strategy_source IS NULL OR btrim(strategy_source) = '' THEN NULL
+      ELSE btrim(strategy_source)::jsonb
+    END;
