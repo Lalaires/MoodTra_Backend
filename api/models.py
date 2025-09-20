@@ -35,7 +35,7 @@ class EmotionLabel(Base):
 
 # Table: strategy
 class Strategy(Base):
-    __tablename__ = "strategies"
+    __tablename__ = "strategy"
     strategy_id: Mapped[UUIDT] = mapped_column(primary_key=True)
     strategy_name: Mapped[str] = mapped_column(String(100), nullable=False)
     strategy_desc: Mapped[str | None] = mapped_column(Text)
@@ -46,7 +46,7 @@ class Strategy(Base):
 
 # Link table: strategy_emotion
 class StrategyEmotion(Base):
-    __tablename__ = "emo_strategy"
+    __tablename__ = "strategy_emotion"
     strategy_id: Mapped[UUIDT] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
     emotion_id: Mapped[int] = mapped_column(ForeignKey("emotion_label.emotion_id", ondelete="CASCADE"), primary_key=True)
 
