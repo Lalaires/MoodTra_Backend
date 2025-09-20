@@ -100,11 +100,18 @@ def chat_endpoint(
             .params(emotion=top_emotion)
         ).scalars().all()
 
-        for i, strategy in enumerate(strategies):
-            print(f"  {i+1}. {strategy.strategy_name}, {strategy.strategy_instruction}")
+        # Convert strategies to string format
+        strategies_string = ""
+        if strategies:
+            strategy_lines = []
+            for i, strategy in enumerate(strategies):
+                strategy_info = f"{i+1}. Name: {strategy.strategy_name}, Description: {strategy.strategy_desc}, Instruction: {strategy.strategy_instruction}, Duration: {strategy.strategy_duration}, Requirements: {strategy.strategy_requirements}."
+                strategy_lines.append(strategy_info)
+            strategies_string = "\n".join(strategy_lines)
+            print(f"Strategies string: {strategies_string}")
 
         # Generate reply via AI pipeline with history context
-        reply_text = get_pipeline().chat(message_text, detected_emotion=emotion, history_context=history_context, strategies=strategies)
+        reply_text = get_pipeline().chat(message_text, detected_emotion=emotion, history_context=history_context, strategies=strategies_string)
 
         # Store assistant's reply
         assistant_msg = ChatMessage(
