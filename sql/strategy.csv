@@ -1,0 +1,46 @@
+"strategy_id","strategy_name","strategy_desc","strategy_duration","strategy_requirements","strategy_instruction","strategy_source"
+s8,Brisk Walk,Short bouts of walking to reduce stress hormones and improve mood.,15,"{""location"":""outdoor"", ""participants"":""1 or group""}","Walk briskly at a comfortable pace, focus on breathing and movement. Repeat daily or as needed.","{""source_name"":""Harvard Health Publishing"", ""source_link"":""https://www.health.harvard.edu/mind-and-mood/exercise-is-an-all-natural-treatment-to-fight-depression""}
+"
+s9,Loving-Kindness Meditation,A meditation practice that builds compassion and positive connection to self and others.,20,"{""location"":""indoor"", ""participants"":1, ""environment"":""quiet""}
+","Sit quietly, breathe deeply, repeat phrases like “May I be happy, may others be safe.” Expand from self → loved ones → community.","{""source_name"":""Stanford Center for Compassion"", ""source_link"":""https://ccare.stanford.edu/""}
+"
+s2,Progressive Muscle Relaxation,Systematic tensing and releasing of muscle groups to reduce tension and anxiety.,15,"{""location"":""indoor"", ""participants"":1, ""environment"":""quiet""}
+","Starting from feet, tense each muscle group for 5-7 seconds, then release for 10-15 seconds. Work upward through the body to the face.","{""source_name"":""Anxiety & Depression Association of America"", ""source_link"":""https://adaa.org/tips""}
+"
+s10,Positive Event Sharing,Talking with others about positive experiences to amplify joy and connectedness.,15,"{""location"":""indoor/outdoor"", ""participants"":2}
+","Choose a positive event, describe it in detail to a supportive person, focus on emotions and meaning, encourage feedback.","{""source_name"":""Greater Good in Action (UC Berkeley) — Capitalizing on Positive Events"",""source_link"":""https://ggia.berkeley.edu/practice/capitalizing_on_positive_events""}
+"
+s1,Diaphragmatic Breathing,"A relaxation technique focusing on slow, deep breathing to reduce arousal and calm emotions.",5,"{""location"":""indoor"", ""participants"":1}
+","Sit comfortably, place one hand on your belly, inhale slowly through your nose for a count of 5, exhale through your mouth for a count of 5. Repeat for several cycles.","{""source_name"":""Cleveland Clinic — Diaphragmatic Breathing"",""source_link"":""https://my.clevelandclinic.org/health/articles/9445-diaphragmatic-breathing""}
+"
+s3,"5-4-3-2-1 Grounding",A sensory-based grounding technique to manage fear and panic.,3,"{""location"":""indoor/outdoor"", ""participants"":1}
+","Identify 5 things you see, 4 things you feel, 3 things you hear, 2 things you smell, and 1 thing you taste. Breathe slowly while naming each.","{""source_name"":""Mindfulness-based CBT guides"", ""source_link"":""https://www.therapistaid.com/worksheets/grounding-techniques""}
+"
+s4,Safe-place Visualization,Guided imagery to create a mental safe zone that reduces anxiety and sadness.,10,"{""location"":""indoor"", ""participants"":1, ""environment"":""quiet""}
+","Sit comfortably, close eyes, imagine a safe place engaging all senses (sight, sound, smell, touch). Use a calming cue word. Return gently.","{""source_name"":""Cognitive Behavioral Therapy workbooks"", ""source_link"":""https://positivepsychology.com/guided-imagery""}
+"
+s5,Expressive Writing,Writing openly about stressful events to process emotions and reduce distress.,20,"{""location"":""indoor"", ""participants"":1, ""materials"":""paper/pen or digital device""}
+",Write freely about thoughts and feelings around a difficult event. Do not worry about grammar or spelling. Re-ground yourself afterward.,"{""source_name"":""James Pennebaker"", ""source_link"":""https://journals.sagepub.com/doi/10.1177/1745691617707315""}
+"
+s11,Clarity Journaling,Writing to organize thoughts and reduce confusion or overwhelm.,20,"{""location"":""indoor"", ""participants"":1, ""materials"":""notebook or app""}
+","Free-write about a confusing situation, list what you know vs. don’t know, outline possible actions. Review after writing.","{""source_name"":""Beck Institute — Thought Record Worksheet"",""source_link"":""https://beckinstitute.org/wp-content/uploads/2021/08/Thought-Record-Worksheet.pdf""}
+"
+s12,Forest Walk,Spending mindful time in nature to reduce stress and improve well-being.,25,"{""location"":""outdoor"", ""participants"":""1 or group""}
+","Walk in a natural setting; focus on sensory input (sights, sounds, smells). Avoid digital distractions.","{""source_name"":""Japanese Shinrin-yoku Research"", ""source_link"":""https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5580555/""}
+"
+s13,Music Engagement,"Using music to regulate mood, either calming or energizing depending on the need.",15,"{""location"":""indoor/outdoor"", ""participants"":""1 or group"", ""materials"":""music device""}
+","Select music that matches your goal (soothing for calm, upbeat for energy). Listen attentively, sing along, or move with the rhythm.","{""source_name"":""American Music Therapy Association"", ""source_link"":""https://www.musictherapy.org/research/factsheets/""}
+"
+s6,Gratitude Journaling,Listing positive aspects of life to boost joy and counter sadness.,10,"{""location"":""indoor"", ""participants"":1, ""materials"":""notebook or app""}",Write down at least three things you are grateful for each day and why they matter to you. Optionally write thank-you notes.,"{""source_name"":""Greater Good Science Center"", ""source_link"":""https://greatergood.berkeley.edu/topic/gratitude""}
+"
+s7,Social Support,"Talking to a trusted person to relieve sadness, anger, or anxiety.",30,"{""location"":""indoor/outdoor"", ""participants"":2}","Ask a trusted friend to talk, express your emotions clearly, request listening or specific help, and allow mutual support.","{""source_name"":""WHO"", ""source_link"":""https://www.who.int/teams/mental-health-and-substance-use""}
+"
+s14,Strengths Reflection,Identifying and reflecting on personal strengths to build resilience and pride.,15,"{""location"":""indoor"", ""participants"":1}
+",List 3 personal strengths. Write examples of when you used them effectively. Reflect on how to apply them to current challenges.,"{""source_name"":""VIA Character Strengths"", ""source_link"":""https://www.viacharacter.org/resources""}
+"
+s15,Social Connection Ritual,Regularly reaching out to others to prevent loneliness and foster belonging.,15,"{""location"":""indoor/outdoor"", ""participants"":2, ""materials"":""phone or face-to-face""}
+","Schedule a recurring call, walk, or meal with a friend/family. Be intentional about presence and listening.","{""source_name"":""American Psychological Association — Manage stress: Strengthen your support network"",""source_link"":""https://www.apa.org/topics/stress/manage-social-support""}
+"
+s16,Celebration Ritual,Creating rituals to savor achievements and reinforce positive emotions.,10,"{""location"":""indoor/outdoor"", ""participants"":""1 or group""}
+","Mark small wins with a meaningful action (journal entry, toast, reward, sharing online). Emphasize enjoyment, not comparison.","{""source_name"":""Positive Psychology Center"", ""source_link"":""https://ppc.sas.upenn.edu/""}
+"

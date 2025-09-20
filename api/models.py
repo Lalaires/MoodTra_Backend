@@ -2,6 +2,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text
 from uuid import uuid4, UUID as UUIDT
 from datetime import datetime, date
+from sqlalchemy.dialects.postgresql import JSONB
 
 class Base(DeclarativeBase):
     pass
@@ -35,19 +36,19 @@ class EmotionLabel(Base):
 
 # Table: strategy
 class Strategy(Base):
-    __tablename__ = "strategies"
-    strategy_id: Mapped[UUIDT] = mapped_column(primary_key=True)
+    __tablename__ = "strategy"
+    strategy_id: Mapped[str] = mapped_column(primary_key=True)
     strategy_name: Mapped[str] = mapped_column(String(100), nullable=False)
     strategy_desc: Mapped[str | None] = mapped_column(Text)
     strategy_duration: Mapped[int | None] = mapped_column(SmallInteger)
-    strategy_requirements: Mapped[str | None] = mapped_column(Text)
+    strategy_requirements: Mapped[dict | None] = mapped_column(JSONB)
     strategy_instruction: Mapped[str | None] = mapped_column(Text)
-    strategy_source: Mapped[str | None] = mapped_column(Text)
+    strategy_source: Mapped[dict | None] = mapped_column(JSONB)
 
 # Link table: strategy_emotion
 class StrategyEmotion(Base):
-    __tablename__ = "emo_strategy"
-    strategy_id: Mapped[UUIDT] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
+    __tablename__ = "strategy_emotion"
+    strategy_id: Mapped[str] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
     emotion_id: Mapped[int] = mapped_column(ForeignKey("emotion_label.emotion_id", ondelete="CASCADE"), primary_key=True)
 
 # Table: chat_message
