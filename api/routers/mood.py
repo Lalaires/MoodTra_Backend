@@ -10,6 +10,8 @@ from ..deps import get_db, get_account_id
 from ..models import MoodLog, EmotionLabel
 from ..schemas import MoodCreate, MoodUpdate, MoodOut, MoodSummaryItem
 
+from uuid import uuid4
+
 router = APIRouter(
     prefix="/mood",
     tags=["mood"],
@@ -85,6 +87,7 @@ def create_entry(
         raise HTTPException(status_code=400, detail=f"No emotion_label found for emoji '{payload.mood_emoji}'.")
 
     row = MoodLog(
+        mood_id=uuid4(),
         account_id=account_id,
         mood_date=payload.mood_date,
         mood_emoji=payload.mood_emoji,

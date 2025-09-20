@@ -66,7 +66,7 @@ class MoodLog(Base):
         UniqueConstraint("account_id", "mood_date", name="uq_mood_log_account_date"),
     )
 
-    mood_id: Mapped[UUIDT] = mapped_column(primary_key=True, server_default=text("gen_random_uuid()"))
+    mood_id: Mapped[UUIDT] = mapped_column(primary_key=True)
     account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
     mood_date: Mapped[date] = mapped_column(Date, nullable=False)
     mood_emoji: Mapped[str] = mapped_column(Text, nullable=False)
