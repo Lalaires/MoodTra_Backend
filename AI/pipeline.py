@@ -15,17 +15,17 @@ class MindPal_Pipeline:
         if not GOOGLE_API_KEY:
             raise RuntimeError("Missing GOOGLE_API_KEY in environment variables.")
 
-        self.model = "gemini-2.5-pro"
+        self.model = "gemini-2.5-flash"
 
         self.client = genai.Client(api_key=GOOGLE_API_KEY)
+
+        self.SLANG_MAP = self.load_slang_dataset() or {}
 
         self.emotion_classifier = pipeline(
             "text-classification",
             model="j-hartmann/emotion-english-distilroberta-base",
             top_k=None,
         )
-
-        self.SLANG_MAP = self.load_slang_dataset() or {}
 
     def normalize_text(self, text: str) -> str:
         t = " ".join(text.split()).strip()
@@ -61,35 +61,20 @@ class MindPal_Pipeline:
                 )
         return text
 
-    def emotion_detection(self, text: str) -> str:
-        emotion = self.emotion_classifier(text)
+    def emotion_detection(self, history_context: str) -> str:
+        emotion = self.emotion_classifier(history_context)
         return emotion[0]
-    
-    def emo_for_strategy(self, text: str) -> str:
-        emotion = self.emotion_detection(text)
-        top_emotion = emotion[0]["label"]
-        return top_emotion
 
-    def generate_response(
+    def chat(
         self,
         text: str,
         detected_emotion: str,
-        history_messages: List[Tuple[str, str]] | None = None,
-        strategies: List | None = None
+        history_context: str,
+        strategies: List | None = None,
     ) -> str:
-        # Build compact conversation context from history
-        history_context = ""
-        if history_messages:
-            # Router already limits and orders history; use as-is
-            recent = history_messages
-            lines = []
-            for role, msg in recent:
-                # guard against None and trim overly long single messages
-                safe_msg = (msg or "").strip()
-                if len(safe_msg) > 800:
-                    safe_msg = safe_msg[:800] + " ..."
-                lines.append(f"{role}: {safe_msg}")
-            history_context = "\n".join(lines)
+
+        text = self.normalize_text(text)
+        processed_text = self.detect_and_map_slang(text)
 
         prompt = f"""
         You are MindPal, a supportive wellbeing chatbot for 13-15 year-old Australian teens.
@@ -102,7 +87,7 @@ class MindPal_Pipeline:
         - Encourage them to talk more, ask follow up questions and let them express their feelings
         - Encourage real-life support systems and resources
         - When appropriate and you have enough information, gently encourage the teen to talk with a trusted adult or friend
-        - When appropriate, suggest the most suitable coping strategy from the list of coping strategies provided
+        - When appropriate, suggest the most suitable coping strategy only from the list of coping strategies provided
         - When providing coping strategy, output the strategy name and instruction, and ask for user feedback on the strategy
         - Avoid shaming or lecturing
         - Use emojis to express emotions
@@ -114,8 +99,8 @@ class MindPal_Pipeline:
 
         Current emotion(s) detected: {detected_emotion}
         Conversation context: {history_context}
-        Child's current message: {text}
-        List of coping strategies based on the child's current emotion(s): {strategies}
+        Child's current message: {processed_text}
+        List of coping strategies: {strategies}
 
         Always rethink and double check your answer before responding.
         When you completely understand you can start the session.
@@ -130,14 +115,3 @@ class MindPal_Pipeline:
             return "I'm sorry, I'm having trouble generating a response. Please try again later."
 
         return response.text
-
-    def chat(
-        self, text: str, history_messages: List[Tuple[str, str]] | None = None, strategies: List | None = None
-    ) -> str:
-        text = self.normalize_text(text)
-        text = self.detect_and_map_slang(text)
-        detected_emotion = self.emotion_detection(text)
-        reply = self.generate_response(
-            text, detected_emotion, history_messages=history_messages, strategies=strategies
-        )
-        return reply
