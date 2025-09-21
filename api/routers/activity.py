@@ -18,18 +18,10 @@ def create_activity(
     account_id = Depends(get_account_id),
     db: Session = Depends(get_db),
 ):
-    # XOR validation for source
-    has_mood = payload.mood_log_id is not None
-    has_msg = payload.message_id is not None
-    if has_mood == has_msg:
-        raise HTTPException(status_code=400, detail="Provide exactly one of mood_log_id or message_id")
-
     obj = Activity(
         account_id=account_id,
         strategy_id=payload.strategy_id,
         emotion_before=payload.emotion_before,
-        mood_log_id=payload.mood_log_id,
-        message_id=payload.message_id,
         activity_status="pending",
     )
     db.add(obj)

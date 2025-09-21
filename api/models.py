@@ -44,6 +44,7 @@ class Strategy(Base):
     strategy_requirements: Mapped[dict | None] = mapped_column(JSONB)
     strategy_instruction: Mapped[str | None] = mapped_column(Text)
     strategy_source: Mapped[dict | None] = mapped_column(JSONB)
+    strategy_category: Mapped[str | None] = mapped_column(Text)
 
 # Link table: strategy_emotion
 class StrategyEmotion(Base):
@@ -64,15 +65,9 @@ class Activity(Base):
     activity_status: Mapped[str] = mapped_column(Text, server_default=text("'pending'"), nullable=False)
     emotion_before: Mapped[str] = mapped_column(Text, nullable=False)  # emoji
     emotion_after: Mapped[str | None] = mapped_column(Text)
-
-    mood_log_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("mood_log.mood_id", ondelete="SET NULL"))
     message_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("chat_message.message_id", ondelete="SET NULL"))
 
     __table_args__ = (
-        CheckConstraint(
-            "(mood_log_id IS NOT NULL AND message_id IS NULL) OR (mood_log_id IS NULL AND message_id IS NOT NULL)",
-            name="activity_one_source_chk",
-        ),
         CheckConstraint(
             "activity_status IN ('pending','completed','abandoned')",
             name="activity_status_chk",
