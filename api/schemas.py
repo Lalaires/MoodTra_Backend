@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Any, Dict
 from uuid import UUID
 from datetime import datetime, date
 
@@ -38,3 +38,37 @@ class MoodSummaryItem(BaseModel):
     emotion_id: Optional[int]
     emoji: str
     count: int
+
+# ---------- Strategy ----------
+
+class StrategyOut(BaseModel):
+    strategy_id: str
+    strategy_name: str
+    strategy_desc: Optional[str] = None
+    strategy_duration: Optional[int] = None
+    strategy_requirements: Optional[Dict[str, Any]] = None
+    strategy_instruction: Optional[str] = None
+    strategy_source: Optional[Dict[str, Any]] = None
+
+# ---------- Activity ----------
+class ActivityCreate(BaseModel):
+    strategy_id: str
+    emotion_before: str
+    mood_log_id: Optional[UUID] = None
+    message_id: Optional[UUID] = None  # exactly one required
+
+class ActivityUpdate(BaseModel):
+    activity_status: Optional[str] = Field(default=None, pattern="^(pending|completed|abandoned)$")
+    emotion_after: Optional[str] = None
+
+class ActivityOut(BaseModel):
+    activity_id: UUID
+    account_id: UUID
+    strategy_id: str
+    activity_ts: datetime
+    activity_status: str
+    emotion_before: str
+    emotion_after: Optional[str] = None
+    mood_log_id: Optional[UUID] = None
+    message_id: Optional[UUID] = None
+

@@ -1,7 +1,8 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text
+from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text, CheckConstraint
 from uuid import uuid4, UUID as UUIDT
 from datetime import datetime, date
+from sqlalchemy.dialects.postgresql import JSONB
 
 class Base(DeclarativeBase):
     pass
@@ -40,15 +41,42 @@ class Strategy(Base):
     strategy_name: Mapped[str] = mapped_column(String(100), nullable=False)
     strategy_desc: Mapped[str | None] = mapped_column(Text)
     strategy_duration: Mapped[int | None] = mapped_column(SmallInteger)
-    strategy_requirements: Mapped[str | None] = mapped_column(Text)
+    strategy_requirements: Mapped[dict | None] = mapped_column(JSONB)
     strategy_instruction: Mapped[str | None] = mapped_column(Text)
-    strategy_source: Mapped[str | None] = mapped_column(Text)
+    strategy_source: Mapped[dict | None] = mapped_column(JSONB)
 
 # Link table: strategy_emotion
 class StrategyEmotion(Base):
     __tablename__ = "strategy_emotion"
-    strategy_id: Mapped[UUIDT] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
+    
+    strategy_id: Mapped[str] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
     emotion_id: Mapped[int] = mapped_column(ForeignKey("emotion_label.emotion_id", ondelete="CASCADE"), primary_key=True)
+
+class Activity(Base):
+    __tablename__ = "activity"
+
+    # DB column has no server default, so supply a Python-side default
+    activity_id: Mapped[UUIDT] = mapped_column(primary_key=True, default=uuid4)
+    account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    strategy_id: Mapped[str] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="RESTRICT"), nullable=False)
+    activity_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    activity_status: Mapped[str] = mapped_column(Text, server_default=text("'pending'"), nullable=False)
+    emotion_before: Mapped[str] = mapped_column(Text, nullable=False)  # emoji
+    emotion_after: Mapped[str | None] = mapped_column(Text)
+
+    mood_log_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("mood_log.mood_id", ondelete="SET NULL"))
+    message_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("chat_message.message_id", ondelete="SET NULL"))
+
+    __table_args__ = (
+        CheckConstraint(
+            "(mood_log_id IS NOT NULL AND message_id IS NULL) OR (mood_log_id IS NULL AND message_id IS NOT NULL)",
+            name="activity_one_source_chk",
+        ),
+        CheckConstraint(
+            "activity_status IN ('pending','completed','abandoned')",
+            name="activity_status_chk",
+        ),
+    )
 
 # Table: chat_message
 class ChatMessage(Base):

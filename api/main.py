@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import chat, mood
+from .routers import chat, mood, strategy_emotion, activity
 from api.bootstrap import prepare_runtime_tmp
 
 prepare_runtime_tmp()
@@ -19,7 +19,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Content-Type", "Accept", "Authorization", "x-session-id", "x-account-id"],
 )
 
@@ -29,3 +29,5 @@ def health():
 
 app.include_router(chat.router)
 app.include_router(mood.router)
+app.include_router(strategy_emotion.router)
+app.include_router(activity.router)
