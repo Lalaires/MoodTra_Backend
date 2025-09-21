@@ -50,3 +50,25 @@ class StrategyOut(BaseModel):
     strategy_instruction: Optional[str] = None
     strategy_source: Optional[Dict[str, Any]] = None
 
+# ---------- Activity ----------
+class ActivityCreate(BaseModel):
+    strategy_id: str
+    emotion_before: str
+    mood_log_id: Optional[UUID] = None
+    message_id: Optional[UUID] = None  # exactly one required
+
+class ActivityUpdate(BaseModel):
+    activity_status: Optional[str] = Field(default=None, pattern="^(pending|completed|abandoned)$")
+    emotion_after: Optional[str] = None
+
+class ActivityOut(BaseModel):
+    activity_id: UUID
+    account_id: UUID
+    strategy_id: str
+    activity_ts: datetime
+    activity_status: str
+    emotion_before: str
+    emotion_after: Optional[str] = None
+    mood_log_id: Optional[UUID] = None
+    message_id: Optional[UUID] = None
+

@@ -13,6 +13,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+# List strategies recommended for a given emoji
 @router.get(
     "/emojis/{emoji}",
     response_model=List[StrategyOut],
@@ -37,5 +38,24 @@ def list_strategies_for_emoji(
         .where(EmotionLabel.emoji == emoji)
         .order_by(Strategy.strategy_name.asc())
     )
+    rows = db.execute(stmt).all()
+    return [StrategyOut(**dict(r._mapping)) for r in rows]
+
+# List all strategies for client-side mapping
+@router.get(
+    "",
+    response_model=List[StrategyOut],
+    summary="List all strategies",
+)
+def list_all_strategies(db: Session = Depends(get_db)):
+    stmt = select(
+        Strategy.strategy_id,
+        Strategy.strategy_name,
+        Strategy.strategy_desc,
+        Strategy.strategy_duration,
+        Strategy.strategy_requirements,
+        Strategy.strategy_instruction,
+        Strategy.strategy_source,
+    ).order_by(Strategy.strategy_name.asc())
     rows = db.execute(stmt).all()
     return [StrategyOut(**dict(r._mapping)) for r in rows]
