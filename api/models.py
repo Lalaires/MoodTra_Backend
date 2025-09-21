@@ -52,6 +52,7 @@ class StrategyEmotion(Base):
     strategy_id: Mapped[str] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
     emotion_id: Mapped[int] = mapped_column(ForeignKey("emotion_label.emotion_id", ondelete="CASCADE"), primary_key=True)
 
+# Table: activity
 class Activity(Base):
     __tablename__ = "activity"
 
@@ -105,16 +106,3 @@ class MoodLog(Base):
     # timestamps
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
-
-# Table: activity
-class Activity(Base):
-    __tablename__ = "activity"
-    activity_id: Mapped[UUIDT] = mapped_column(primary_key=True)
-    account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
-    strategy_id: Mapped[str | None] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="SET NULL"))
-    activity_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
-    activity_status: Mapped[str] = mapped_column(String(50), nullable=False)
-    emotion_before: Mapped[str | None] = mapped_column(String(50))
-    emotion_after: Mapped[str | None] = mapped_column(String(50))
-    message_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("chat_message.message_id", ondelete="SET NULL"))
-
