@@ -1,9 +1,8 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routers import chat, mood
+from .routers import chat, mood, strategy_emotion, activity
 from api.bootstrap import prepare_runtime_tmp
-from .routers import strategy_emotion
 
 prepare_runtime_tmp()
 
@@ -31,3 +30,4 @@ def health():
 app.include_router(chat.router)
 app.include_router(mood.router)
 app.include_router(strategy_emotion.router)
+app.include_router(activity.router)
