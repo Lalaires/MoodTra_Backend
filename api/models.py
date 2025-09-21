@@ -37,7 +37,6 @@ class EmotionLabel(Base):
 # Table: strategy
 class Strategy(Base):
     __tablename__ = "strategy"
-
     strategy_id: Mapped[str] = mapped_column(primary_key=True)
     strategy_name: Mapped[str] = mapped_column(String(100), nullable=False)
     strategy_desc: Mapped[str | None] = mapped_column(Text)
@@ -53,6 +52,7 @@ class StrategyEmotion(Base):
     strategy_id: Mapped[str] = mapped_column(ForeignKey("strategy.strategy_id", ondelete="CASCADE"), primary_key=True)
     emotion_id: Mapped[int] = mapped_column(ForeignKey("emotion_label.emotion_id", ondelete="CASCADE"), primary_key=True)
 
+# Table: activity
 class Activity(Base):
     __tablename__ = "activity"
 
@@ -106,4 +106,3 @@ class MoodLog(Base):
     # timestamps
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
-

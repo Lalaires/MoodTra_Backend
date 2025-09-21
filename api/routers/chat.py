@@ -1,14 +1,16 @@
+from curses import OK
 from fastapi import APIRouter, Depends, Query, HTTPException
 from sqlalchemy import select, desc, func, bindparam
 from sqlalchemy.orm import Session
 from uuid import uuid4
 from datetime import datetime, timezone
 import logging
+import re
 
 from AI.pipeline import MindPal_Pipeline
 
 from ..deps import get_db, get_session_id
-from ..models import ChatMessage, Strategy, StrategyEmotion, EmotionLabel
+from ..models import ChatMessage, Strategy, StrategyEmotion, EmotionLabel, Activity, ChatSession
 from ..schemas import ChatAskIn, ChatReplyOut
 
 router = APIRouter(prefix="/api", tags=["chat"])
@@ -100,11 +102,17 @@ def chat_endpoint(
             .params(emotion=top_emotion)
         ).scalars().all()
 
-        for i, strategy in enumerate(strategies):
-            print(f"  {i+1}. {strategy.strategy_name}, {strategy.strategy_instruction}")
+        # Convert strategies to string format
+        strategies_string = ""
+        if strategies:
+            strategy_lines = []
+            for i, strategy in enumerate(strategies):
+                strategy_info = f"{i+1}. Name: {strategy.strategy_name}, Description: {strategy.strategy_desc}, Instruction: {strategy.strategy_instruction}, Duration: {strategy.strategy_duration}, Requirements: {strategy.strategy_requirements}."
+                strategy_lines.append(strategy_info)
+            strategies_string = "\n".join(strategy_lines)
 
         # Generate reply via AI pipeline with history context
-        reply_text = get_pipeline().chat(message_text, detected_emotion=emotion, history_context=history_context, strategies=strategies)
+        reply_text = get_pipeline().chat(message_text, detected_emotion=emotion, history_context=history_context, strategies=strategies_string)
 
         # Store assistant's reply
         assistant_msg = ChatMessage(
@@ -116,10 +124,38 @@ def chat_endpoint(
         )
         db.add(assistant_msg)
         db.flush()
-        db.commit() # Many
+        
+        # Extract strategy name when instructions are present
+        if "instruction" in reply_text.lower():
+            strategy_match = re.search(r'\*\*Strategy:\*\*\s*([^\n*]+)', reply_text)
+            if strategy_match:
+                strategy_name = strategy_match.group(1).strip()
 
+                strategy = db.execute(
+                    select(Strategy)
+                    .where(Strategy.strategy_name == strategy_name)
+                ).scalar_one()
+
+                session = db.execute(
+                    select(ChatSession)
+                    .where(ChatSession.session_id == session_id)
+                ).scalar_one()
+
+                activity = Activity(
+                    activity_id=uuid4(),
+                    account_id=session.account_id,
+                    strategy_id=strategy.strategy_id,
+                    activity_ts=datetime.now(timezone.utc),
+                    activity_status="completed",
+                    emotion_before=top_emotion,
+                    message_id=assistant_msg.message_id,
+                )
+                db.add(activity)
+                db.flush()
+
+        db.commit()
         return ChatReplyOut(reply_text=reply_text)
     except Exception as e:
-        db.rollback() # Many
+        db.rollback()
         logger.exception("chat ask failed")
         raise HTTPException(status_code=500, detail=f"Internal error: {type(e).__name__}: {e}")
