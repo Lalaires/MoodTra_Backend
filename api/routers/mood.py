@@ -104,12 +104,8 @@ def create_entry(
 
 # ---------- UPDATE ----------
 
-@router.put(
-    "/entries/{mood_date}",
-    response_model=MoodOut,
-    summary="Update an existing mood entry for a date",
-)
-def update_entry(
+@router.patch("/entries/{mood_date}", response_model=MoodOut, summary="Update an existing mood entry for a date",)
+def update_mood_entry(
     mood_date: date = Path(..., description="The calendar date (YYYY-MM-DD) of the mood entry to update."),
     payload: MoodUpdate = ...,
     account_id = Depends(get_account_id),
