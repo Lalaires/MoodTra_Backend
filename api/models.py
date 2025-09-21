@@ -106,3 +106,14 @@ class MoodLog(Base):
     # timestamps
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+# Table: crisis_alert
+class CrisisAlert(Base):
+    __tablename__ = "crisis_alert"
+    crisis_alert_id: Mapped[UUIDT] = mapped_column(primary_key=True)
+    account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    crisis_id: Mapped[int] = mapped_column(ForeignKey("crisis.crisis_id", ondelete="CASCADE"), nullable=False)
+    crisis_alert_severity: Mapped[str] = mapped_column(Text, nullable=False)
+    crisis_alert_status: Mapped[str] = mapped_column(Text, nullable=False)
+    crisis_alert_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    crisis_alert_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
