@@ -70,3 +70,13 @@ class ActivityOut(BaseModel):
     emotion_after: Optional[str] = None
     message_id: Optional[UUID] = None
 
+# ---------- Crisis ----------
+class CrisisAlertOut(BaseModel):
+    crisis_alert_id: UUID
+    account_id: UUID
+    crisis_id: int
+    crisis_alert_severity: str
+    crisis_alert_status: str
+    crisis_alert_note: Optional[str] = None
+    crisis_alert_ts: datetime
+
