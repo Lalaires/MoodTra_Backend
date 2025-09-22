@@ -112,3 +112,4 @@ class CrisisAlert(Base):
     crisis_alert_status: Mapped[str] = mapped_column(Text, nullable=False)
     crisis_alert_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     crisis_alert_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
+    last_msg_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
