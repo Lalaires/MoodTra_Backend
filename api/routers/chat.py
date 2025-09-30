@@ -9,7 +9,7 @@ import re
 
 from AI.pipeline import MindPal_Pipeline
 
-from ..deps import get_db, get_session_id
+from ..deps import get_db, get_session_id, get_account_id
 from ..models import ChatMessage, Strategy, StrategyEmotion, EmotionLabel, Activity, ChatSession
 from ..schemas import ChatAskIn, ChatReplyOut
 
@@ -30,12 +30,23 @@ def get_pipeline() -> MindPal_Pipeline:
 def chat_endpoint(
     payload: ChatAskIn,
     session_id = Depends(get_session_id),
+    account_id = Depends(get_account_id),        # NEW: caller's account
     db: Session = Depends(get_db)
 ):
     message_text = (payload.message_text or "").strip()
     if not message_text:
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
 
+    # --- BEGIN OWNERSHIP CHECK (minimal addition) ---
+    sess = db.get(ChatSession, session_id)
+    if not sess or sess.account_id != account_id:
+        # Use 404 for both cases to avoid leaking which session_ids exist
+        raise HTTPException(status_code=404, detail="Chat session not found")
+    # (Optional) Disallow sending messages to archived/closed sessions:
+    if getattr(sess, "status", "active") in ("archived", "closed"):
+        raise HTTPException(status_code=409, detail=f"Session status={sess.status} does not accept new messages")
+    # --- END OWNERSHIP CHECK ---    
+    
     now = datetime.now(timezone.utc)
     try:
         # Store user's message
@@ -124,7 +135,15 @@ def chat_endpoint(
         )
         db.add(assistant_msg)
         db.flush()
-        
+
+        # Many: Update session's last_active_at
+        session = db.execute(
+            select(ChatSession)
+            .where(ChatSession.session_id == session_id)
+        ).scalar_one()
+        session.last_active_at = datetime.now(timezone.utc)
+        db.add(session)
+
         # Extract strategy name when instructions are present
         if "instruction" in reply_text.lower():
             strategy_match = re.search(r'\*\*Strategy:\*\*\s*([^\n*]+)', reply_text)

@@ -17,15 +17,6 @@ class Account(Base):
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     status: Mapped[str] = mapped_column(Text, nullable=False)
 
-# Table: chat_session
-class ChatSession(Base):
-    __tablename__ = "chat_session"
-    session_id: Mapped[UUIDT] = mapped_column(primary_key=True)
-    account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
-    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
-    last_active_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
-    status: Mapped[str] = mapped_column(Text, nullable=False)
-
 # Table: emotion_label
 class EmotionLabel(Base):
     __tablename__ = "emotion_label"
@@ -82,6 +73,22 @@ class ChatMessage(Base):
     message_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     message_role: Mapped[str] = mapped_column(String(50), nullable=False)
     message_text: Mapped[str] = mapped_column(Text, nullable=False)
+
+# Table: chat_session
+class ChatSession(Base):
+    __tablename__ = "chat_session"
+
+    session_id: Mapped[UUIDT] = mapped_column(primary_key=True, default=uuid4)
+    account_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    name: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    last_active_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    status: Mapped[str] = mapped_column(Text, server_default=text("'active'"), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("status IN ('active','archived','closed')", name="chat_session_status_chk"),
+    )
+
 
 # Table: mood_log
 class MoodLog(Base):

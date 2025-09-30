@@ -11,6 +11,28 @@ class ChatAskIn(BaseModel):
 class ChatReplyOut(BaseModel):
     reply_text: str
 
+# ---------- ChatSession ----------
+class ChatSessionCreate(BaseModel):
+    name: str | None = None  # optional custom title
+
+class ChatSessionUpdate(BaseModel):
+    name: str | None = None
+    status: str | None = Field(default=None, pattern="^(active|archived|closed)$")
+
+class ChatSessionOut(BaseModel):
+    session_id: UUID
+    account_id: UUID
+    name: str | None
+    created_at: datetime
+    last_active_at: datetime
+    status: str
+
+class ChatSessionListItem(BaseModel):
+    session_id: UUID
+    name: str | None
+    last_active_at: datetime
+    status: str
+
 # ---------- Mood ----------
 class MoodCreate(BaseModel):
     mood_date: date                      
