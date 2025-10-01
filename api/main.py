@@ -13,6 +13,8 @@ ALLOWED_ORIGINS = [
     "https://mindpal.me",
     "https://www.mindpal.me",
     "https://iteration1.mindpal.me",
+    "https://moodtra.tech/iteration-2/",
+    "https://moodtra.tech",
 ]
 
 app.add_middleware(
