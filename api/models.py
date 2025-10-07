@@ -25,6 +25,12 @@ class EmotionLabel(Base):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
 
+# Table: crisis
+class Crisis(Base):
+    __tablename__ = "crisis"
+    crisis_id: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
+    crisis_name: Mapped[str] = mapped_column(Text, nullable=False)
+
 # Table: strategy
 class Strategy(Base):
     __tablename__ = "strategy"
@@ -120,3 +126,20 @@ class CrisisAlert(Base):
     crisis_alert_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     crisis_alert_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     last_msg_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+
+# Table: crisis_strategy
+class CrisisStrategy(Base):
+    __tablename__ = "crisis_strategy"
+
+    crisis_id: Mapped[int] = mapped_column(
+        ForeignKey("crisis.crisis_id", ondelete="CASCADE"), primary_key=True
+    )
+    crisis_severity: Mapped[str] = mapped_column(Text, primary_key=True)
+    crisis_strategy_text: Mapped[dict] = mapped_column(JSONB, nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
