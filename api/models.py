@@ -131,6 +131,23 @@ class CrisisAlert(Base):
     crisis_alert_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     last_msg_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
+# Table: crisis_strategy
+class CrisisStrategy(Base):
+    __tablename__ = "crisis_strategy"
+
+    crisis_id: Mapped[int] = mapped_column(
+        ForeignKey("crisis.crisis_id", ondelete="CASCADE"), primary_key=True
+    )
+    crisis_severity: Mapped[str] = mapped_column(Text, primary_key=True)
+    crisis_strategy_text: Mapped[dict] = mapped_column(JSONB, nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
 
 # Table: gyardian_child_link
 class GuardianChildLink(Base):
