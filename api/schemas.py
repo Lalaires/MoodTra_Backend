@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, Any, Dict
 from uuid import UUID
 from datetime import datetime, date
@@ -102,3 +102,45 @@ class CrisisAlertOut(BaseModel):
     crisis_alert_note: Optional[str] = None
     crisis_alert_ts: datetime
 
+# ---------- Auth ----------
+class AuthSessionOut(BaseModel):
+    account_id: UUID
+    email: str | None
+    display_name: str
+    account_type: str
+    status: str
+
+# --------- Invites ----------
+class InviteCreateIn(BaseModel):
+    invitee_email: EmailStr
+
+class InviteOut(BaseModel):
+    invite_id: UUID
+    invitee_email: str
+    status: str
+    expires_at: datetime
+    created_at: datetime
+    accepted_at: datetime | None = None
+    accepted_account_id: UUID | None = None
+    share_url: str | None = None  # only on creation response
+
+class InviteAcceptIn(BaseModel):
+    token: str  # raw invite token from link
+
+class InviteListItem(BaseModel):
+    invite_id: UUID
+    invitee_email: str
+    status: str
+    expires_at: datetime
+    accepted_at: datetime | None = None
+
+# --------- Links ----------
+class LinkedChild(BaseModel):
+    account_id: UUID
+    display_name: str
+    email: str | None
+
+class LinkedGuardian(BaseModel):
+    account_id: UUID
+    display_name: str
+    email: str | None
