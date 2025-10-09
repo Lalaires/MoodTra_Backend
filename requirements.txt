@@ -6,6 +6,9 @@ pydantic
 asyncpg
 sqlalchemy
 psycopg2-binary
+python-jose
+requests
+email-validator
 
 # AI
 transformers

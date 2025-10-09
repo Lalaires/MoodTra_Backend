@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text, CheckConstraint
+from sqlalchemy import String, Text, TIMESTAMP, SmallInteger, Numeric, ForeignKey, Date, UniqueConstraint, func, text, CheckConstraint, Enum as PgEnum, Index
 from uuid import uuid4, UUID as UUIDT
 from datetime import datetime, date
 from sqlalchemy.dialects.postgresql import JSONB
@@ -14,8 +14,18 @@ class Account(Base):
     email: Mapped[str | None] = mapped_column(Text, nullable=True)
     display_name: Mapped[str] = mapped_column(Text, nullable=False)
     account_type: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=func.now())
     status: Mapped[str] = mapped_column(Text, nullable=False)
+    
+    cognito_sub: Mapped[str | None] = mapped_column(Text, unique=True, index=True)
+    last_login_at: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True), nullable=True
+    )
+
+    __table_args__ = (
+        CheckConstraint("account_type IN ('guardian','child','admin')", name="account_type_chk"),
+        CheckConstraint("status IN ('active','disabled')", name="account_status_chk"),
+    )
 
 # Table: emotion_label
 class EmotionLabel(Base):
@@ -24,12 +34,6 @@ class EmotionLabel(Base):
     emoji: Mapped[str] = mapped_column(Text, nullable=False)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
-
-# Table: crisis
-class Crisis(Base):
-    __tablename__ = "crisis"
-    crisis_id: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
-    crisis_name: Mapped[str] = mapped_column(Text, nullable=False)
 
 # Table: strategy
 class Strategy(Base):
@@ -127,19 +131,35 @@ class CrisisAlert(Base):
     crisis_alert_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     last_msg_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
-# Table: crisis_strategy
-class CrisisStrategy(Base):
-    __tablename__ = "crisis_strategy"
 
-    crisis_id: Mapped[int] = mapped_column(
-        ForeignKey("crisis.crisis_id", ondelete="CASCADE"), primary_key=True
-    )
-    crisis_severity: Mapped[str] = mapped_column(Text, primary_key=True)
-    crisis_strategy_text: Mapped[dict] = mapped_column(JSONB, nullable=False)
+# Table: gyardian_child_link
+class GuardianChildLink(Base):
+    __tablename__ = "guardian_child_link"
+    link_id: Mapped[UUIDT] = mapped_column(primary_key=True, default=uuid4)
+    guardian_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    child_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    link_status: Mapped[str] = mapped_column(Text, server_default=text("'active'"), nullable=False)
+    linked_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    __table_args__ = (
+        UniqueConstraint("guardian_id", "child_id", name="uq_guardian_child"),
+        CheckConstraint("link_status IN ('active','revoked')", name="gcl_status_chk"),
     )
-    updated_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+
+#Table: guardian_invite
+class GuardianInvite(Base):
+    __tablename__ = "guardian_invite"
+    invite_id: Mapped[UUIDT] = mapped_column(primary_key=True, default=uuid4)
+    guardian_id: Mapped[UUIDT] = mapped_column(ForeignKey("account.account_id", ondelete="CASCADE"), nullable=False)
+    invitee_email: Mapped[str] = mapped_column(Text, nullable=False)
+    token_hash: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
+    status: Mapped[str] = mapped_column(Text, server_default=text("'invited'"), nullable=False)
+    accepted_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True))
+    accepted_account_id: Mapped[UUIDT | None] = mapped_column(ForeignKey("account.account_id"))
+
+    __table_args__ = (
+        CheckConstraint("status IN ('invited','accepted','revoked','expired')", name="invite_status_chk"),
+        Index("gi_guardian_status_idx", "guardian_id", "status"),
     )

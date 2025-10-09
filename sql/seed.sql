@@ -2,6 +2,10 @@
 INSERT INTO account (account_id, display_name, account_type)
 VALUES ('00000000-0000-0000-0000-00000000C0DE', 'Liam', 'child');
 
+
+INSERT INTO account (account_id, display_name, account_type)
+VALUES ('00000000-0000-0000-0000-00000000C0DF', 'Many', 'child');
+
 -- EMOTION_LABEL
 INSERT INTO emotion_label (emotion_id, emoji, name, category) VALUES
  (1,'😠','anger','negative'),
