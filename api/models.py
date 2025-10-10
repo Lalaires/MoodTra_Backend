@@ -68,6 +68,7 @@ class Strategy(Base):
     strategy_instruction: Mapped[str | None] = mapped_column(Text)
     strategy_source: Mapped[dict | None] = mapped_column(JSONB)
     strategy_category: Mapped[str | None] = mapped_column(Text)
+    parent_conv_tip: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
 
 
 # Link table: strategy_emotion
@@ -287,3 +288,11 @@ class CrisisStrategy(Base):
         server_default=func.now(),
         onupdate=func.now(),
     )
+
+# Table: wellbeing_conv_tip
+class WellbeingConvTip(Base):
+    __tablename__ = "wellbeing_conv_tip"
+    wellbeing_score: Mapped[int] = mapped_column(SmallInteger, primary_key=True)
+    wellbeing_conv_text: Mapped[dict] = mapped_column(JSONB, nullable=False)
+
+
