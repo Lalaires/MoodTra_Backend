@@ -1,0 +1,113 @@
+strategy_id,parent_conv_tip
+s1,"{
+  ""1"": ""🫁 Ask calmly: 'How did your breathing exercise go today?' Listen to tone and body language before responding. If they say it felt soothing, acknowledge: 'That’s great — slowing the breath often helps the mind too.' If it felt awkward, reassure: 'That’s okay, these things take practice.'"",
+  ""2"": ""💬 Invite reflection: 'When you were breathing deeply, did you notice any part of your body relaxing?' Offer: 'Sometimes shoulders drop or heartbeat slows — that’s a sign it’s working.'"",
+  ""3"": ""🌬️ Join in once: Try breathing together quietly for a minute, then ask: 'Did it feel different doing it with me?' This models calm without judgment."",
+  ""4"": ""🤝 Reinforce autonomy: 'Do you think this could help before stressful moments like school or bedtime?' Praise effort, not outcome: 'I’m glad you gave it a go.'"",
+  ""5"": ""☀️ Wrap up positively: 'What time of day do you think this works best for you?' Let them choose — building ownership encourages future use.""
+}"
+s2,"{
+  ""1"": ""💪 Ask softly: 'How did your body feel before and after the muscle tensing exercise?' If they can’t tell, explain gently: 'Sometimes it’s subtle — the body just feels a bit lighter afterward.'"",
+  ""2"": ""🧠 Explore sensations: 'Which part felt the most relaxed once you let go of the tension?' Use it to teach awareness of stress signals."",
+  ""3"": ""😌 Offer companionship: 'Would you like me to guide you through it next time?' Doing it together builds trust and calm regulation."",
+  ""4"": ""💬 Reflect together: 'Was there any moment it felt tricky to stay focused?' Reassure that minds often wander and that’s okay."",
+  ""5"": ""🌿 Reinforce use: 'When might this technique be handy — before exams, bedtime, or after arguments?' Link it to real life situations.""
+}"
+s3,"{
+  ""1"": ""👀 Begin with curiosity: 'What did you notice around you when you did the 5-4-3-2-1 exercise?' Encourage sensory detail — colors, textures, sounds."",
+  ""2"": ""🖐️ Guide reflection: 'Which sense helped most — seeing, hearing, or touching?' Discuss why that one felt grounding."",
+  ""3"": ""🌳 Suggest variety: 'Would you like to try it outside sometime — maybe in the garden or park?' Nature adds calming sensory input."",
+  ""4"": ""💬 Connect experience: 'How did your body feel afterward — more present, less rushed?' Normalize small improvements."",
+  ""5"": ""🌼 Reinforce purpose: Explain that noticing surroundings teaches the brain it’s safe. Praise awareness rather than performance.""
+}"
+s4,"{
+  ""1"": ""🏝️ Ask warmly: 'What kind of place did you imagine in your mind today?' Listen for sensory words — that shows vivid visualization."",
+  ""2"": ""💬 Encourage exploration: 'What made that place feel safe for you — the sounds, colors, or something else?' Reflect those details back."",
+  ""3"": ""🎨 Suggest creative follow-up: 'Would you like to draw or describe that place sometime? It could help you return to it faster next time.'"",
+  ""4"": ""🕯️ Normalize practice: 'It can take time before it feels truly relaxing. Would you like to make it part of your bedtime routine?' "",
+  ""5"": ""💗 Reinforce skill: Explain gently that imagining a safe space trains the brain to shift from fear to calm — a tool for life.""
+}"
+s5,"{
+  ""1"": ""📝 Begin softly: 'How was your writing time today?' Keep curiosity on feelings, not content. If they share, thank them for trusting you."",
+  ""2"": ""💭 Encourage insight: 'Did writing help make things clearer or just let some feelings out?' Affirm both as valid outcomes."",
+  ""3"": ""🤔 If they mention difficult topics, validate: 'That sounds heavy. Writing about it shows courage.' Stay in listening mode, not fixing."",
+  ""4"": ""📖 Offer privacy: 'Would you like to keep your writing private or save it in a special place?' Support their choice to build safety."",
+  ""5"": ""🌿 Suggest closure: 'What helps you relax after writing — maybe stretching or music?' Teaches emotional cooldown after reflection.""
+}"
+s6,"{
+  ""1"": ""🌻 Open with warmth: 'What were a few things you felt thankful for today?' Let them list freely without commentary."",
+  ""2"": ""💬 Ask gently: 'Was it easy or hard to think of those things?' Normalize that some days are harder."",
+  ""3"": ""❤️ Link emotion to gratitude: 'When you thought about those things, did it shift your mood even a little?' Reinforce noticing change."",
+  ""4"": ""🤝 Offer shared moment: 'Would you like to share one of your gratitude notes with me or keep it private?' Respect boundaries."",
+  ""5"": ""☀️ Extend habit: 'Maybe we could share one small gratitude each dinner — would that feel good?' Builds family bonding.""
+}"
+s7,"{
+  ""1"": ""👫 Ask lightly: 'Who did you talk to today when you wanted company?' Keep it casual and safe."",
+  ""2"": ""💬 Explore experience: 'How did that conversation make you feel afterward — calmer or just understood?' Validate whichever response comes."",
+  ""3"": ""❤️ Teach communication: 'Sometimes sharing emotions takes bravery — what made it easier to open up today?' "",
+  ""4"": ""🤝 Build reassurance: 'You can always talk with me too, in your own way. I’ll listen just like your friend did.'"",
+  ""5"": ""🌿 Reflect qualities: 'What do you think makes someone a good listener?' Use examples from their story to deepen understanding.""
+}"
+s8,"{
+  ""1"": ""🚶 Ask openly: 'How did your walk go — anything interesting or peaceful along the way?' Let them describe observations."",
+  ""2"": ""🌳 Highlight effect: 'Did you notice your body or mind feeling any different after moving around?' "",
+  ""3"": ""💬 Discuss habit: 'What time of day makes walks feel best — morning, after school, or before bed?'"",
+  ""4"": ""☀️ Suggest co-activity: 'Would you like me to join you next time or do you prefer it as solo time?' Respect autonomy."",
+  ""5"": ""🌿 Reinforce value: Explain that walks help the brain reset — a simple tool they can choose anytime.""
+}"
+s9,"{
+  ""1"": ""🧘 Ask gently: 'How did it feel to send kind thoughts to yourself and others today?' Listen for warmth or difficulty."",
+  ""2"": ""💗 Normalize challenge: 'Sometimes it’s easier to feel kindness toward others than ourselves — that’s very common.'"",
+  ""3"": ""💬 Encourage sharing: 'Was there someone it felt especially meaningful to include?' Reflect back that empathy strengthens connection."",
+  ""4"": ""🌸 Suggest continuation: 'Maybe we could each pick one kind phrase to repeat this week — would you like that?' "",
+  ""5"": ""☀️ Reinforce lesson: Explain that practicing kindness retrains the brain toward compassion — a quiet strength.""
+}"
+s10,"{
+  ""1"": ""💬 Ask with enthusiasm: 'What positive moment did you choose to share today?' Show genuine interest in the story."",
+  ""2"": ""🎉 Reflect emotional detail: 'How did it feel to relive that event while talking about it?' Help them notice the joy of savoring."",
+  ""3"": ""💗 Reinforce connection: 'What was it like to see the other person’s reaction?' Teach the social joy of shared positivity."",
+  ""4"": ""☀️ Suggest tradition: 'Would you like to share one happy story each weekend? It helps us remember the good times together.'"",
+  ""5"": ""🌻 End with appreciation: 'Thank you for letting me hear that story — it brightened my day too.' Models mutual gratitude.""
+}"
+s11,"{
+  ""1"": ""📝 Open gently: 'How was your clarity journaling today — did sorting ideas help?' Keep tone neutral and patient."",
+  ""2"": ""💭 Explore thinking: 'When you listed what you knew vs. didn’t know, did anything surprise you?' Encourage self-insight."",
+  ""3"": ""💬 Discuss planning: 'Did you come up with any steps you might try next?' Reinforce empowerment, not perfection."",
+  ""4"": ""🌿 Normalize confusion: 'It’s okay when answers don’t appear right away — writing is just a first step to clarity.'"",
+  ""5"": ""🤝 Offer practical support: 'If you’d like to talk through any of your options together, I can help you think it through.' ""
+}"
+s12,"{
+  ""1"": ""🌳 Ask casually: 'Where did you walk today?' Follow up with curiosity about sights, smells, or sounds to bring sensory recall."",
+  ""2"": ""🍃 Encourage emotional link: 'Did being outside shift how you were feeling earlier?' Acknowledge even small calm moments."",
+  ""3"": ""💬 Foster reflection: 'Was there something in nature that caught your attention — maybe a sound or color?' "",
+  ""4"": ""☀️ Suggest joint activity: 'Would you like to plan a short walk together this weekend?' Builds shared mindfulness."",
+  ""5"": ""🌿 Reinforce takeaway: Explain gently that noticing nature helps the mind slow down and reconnect to the present.""
+}"
+s13,"{
+  ""1"": ""🎵 Ask curiously: 'What kind of music did you listen to today?' Let them describe without judgment."",
+  ""2"": ""💬 Explore feelings: 'Did the music help you relax or give you energy?' Reflect their answer with understanding."",
+  ""3"": ""🎶 Deepen meaning: 'Was there a lyric or rhythm that stuck with you?' Use it as doorway to discuss emotion safely."",
+  ""4"": ""🕺 Offer connection: 'Would you like to share one of your songs with me so I can understand what you enjoy?' "",
+  ""5"": ""🌻 Reinforce balance: Mention that music can change our state quickly — encourage mindful listening, not just distraction.""
+}"
+s14,"{
+  ""1"": ""💪 Begin with pride: 'Which strengths did you reflect on today?' Let them describe examples freely."",
+  ""2"": ""💬 Build awareness: 'How have you used that strength recently?' Highlight practical use instead of abstract praise."",
+  ""3"": ""🌿 Encourage self-belief: 'Did noticing your strengths change how you feel about challenges right now?' "",
+  ""4"": ""🤝 Share reflection: 'Can I tell you a strength I notice in you?' Strengthens positive self-image through connection."",
+  ""5"": ""☀️ Encourage future thinking: 'How might you use one of those strengths tomorrow?' Reinforces application mindset.""
+}"
+s15,"{
+  ""1"": ""👋 Ask lightly: 'Who did you reach out to today?' Let them tell the story of that small connection."",
+  ""2"": ""💬 Explore feelings: 'How did it feel to connect — comfortable, fun, or maybe a little awkward?' Normalize all responses."",
+  ""3"": ""🤗 Encourage pattern: 'What helps you stay in touch with people you care about?' Help them design consistency."",
+  ""4"": ""🌿 Reflect meaning: 'Was there something nice you learned or noticed about that person today?' "",
+  ""5"": ""☀️ Suggest shared ritual: 'Would you like to plan a family check-in call or walk as part of our routine?' ""
+}"
+s16,"{
+  ""1"": ""🎉 Ask warmly: 'What did you celebrate today?' Acknowledge even small achievements as meaningful."",
+  ""2"": ""💬 Explore meaning: 'What made that moment worth celebrating for you?' Encourage internal pride, not comparison."",
+  ""3"": ""🌟 Discuss process: 'How did it feel to pause and recognize your effort instead of rushing ahead?' "",
+  ""4"": ""🤝 Share joy: 'Would you like us to celebrate something together this week — maybe a small goal or fun moment?' "",
+  ""5"": ""❤️ Reinforce reflection: Explain that celebrating reminds the brain of progress and keeps motivation strong.""
+}"
