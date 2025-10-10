@@ -33,6 +33,7 @@ def list_strategies_for_emoji(
             Strategy.strategy_instruction,
             Strategy.strategy_source,         # JSONB -> dict automatically
             Strategy.strategy_category,
+            Strategy.parent_conv_tip,
         )
         .join(StrategyEmotion, StrategyEmotion.strategy_id == Strategy.strategy_id)
         .join(EmotionLabel, EmotionLabel.emotion_id == StrategyEmotion.emotion_id)
@@ -58,6 +59,7 @@ def list_all_strategies(db: Session = Depends(get_db)):
         Strategy.strategy_instruction,
         Strategy.strategy_source,
         Strategy.strategy_category,
+        Strategy.parent_conv_tip,
     ).order_by(Strategy.strategy_name.asc())
     rows = db.execute(stmt).all()
     return [StrategyOut(**dict(r._mapping)) for r in rows]

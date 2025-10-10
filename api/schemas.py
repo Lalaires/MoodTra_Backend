@@ -3,6 +3,8 @@ from typing import Optional, Any, Dict
 from uuid import UUID
 from datetime import datetime, date
 
+from api.models import WellbeingConvTip
+
 # ---------- Chat ----------
 
 
@@ -84,6 +86,7 @@ class StrategyOut(BaseModel):
     strategy_instruction: Optional[str] = None
     strategy_source: Optional[Dict[str, Any]] = None
     strategy_category: Optional[str] = None
+    parent_conv_tip: Optional[Dict[str, Any]] = None
 
 
 # ---------- Activity ----------
@@ -166,3 +169,8 @@ class LinkedGuardian(BaseModel):
     account_id: UUID
     display_name: str
     email: str | None
+
+# ---------- WellbeingConvTip ----------
+class WellbeingConvTipOut(BaseModel):
+    wellbeing_score: int
+    wellbeing_conv_text: Dict[str, Any]
