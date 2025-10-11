@@ -174,3 +174,9 @@ class LinkedGuardian(BaseModel):
 class WellbeingConvTipOut(BaseModel):
     wellbeing_score: int
     wellbeing_conv_text: Dict[str, Any]
+
+# ---------- Cognito OAuth2 Code Login ----------
+class CodeLoginIn(BaseModel):
+    code: str
+    code_verifier: str | None = None
+    redirect_uri: str | None = None 
