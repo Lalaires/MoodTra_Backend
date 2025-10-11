@@ -37,7 +37,7 @@ class Account(Base):
 
     cognito_sub: Mapped[str | None] = mapped_column(Text, unique=True, index=True)
     last_login_at: Mapped[datetime | None] = mapped_column(
-        TIMESTAMP(timezone=True), nullable=True
+        TIMESTAMP(timezone=True), nullable=True, server_default=func.now()
     )
 
     __table_args__ = (
