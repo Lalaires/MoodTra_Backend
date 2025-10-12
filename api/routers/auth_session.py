@@ -64,7 +64,7 @@ def login_with_code(payload: CodeLoginIn, db: Session = Depends(get_db)):
             cognito_sub=sub,
             email=email,
             display_name=name,
-            account_type=role if role in ("guardian","child","parent") else "pending",
+            account_type=role if role in ("guardian","child","parent") else None,
             status="active",
         )
         db.add(acct)
