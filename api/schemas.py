@@ -126,7 +126,7 @@ class AuthSessionOut(BaseModel):
     account_id: UUID
     email: str | None
     display_name: str
-    account_type: str
+    account_type: Optional[str] = None
     status: str
 
 
