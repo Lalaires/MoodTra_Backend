@@ -9,6 +9,7 @@ psycopg2-binary
 python-jose
 requests
 email-validator
+boto3
 
 # AI
 transformers

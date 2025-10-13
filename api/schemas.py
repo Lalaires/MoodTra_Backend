@@ -122,13 +122,28 @@ class CrisisAlertOut(BaseModel):
 
 
 # ---------- Auth ----------
+# class AuthSessionOut(BaseModel):
+#     account_id: UUID
+#     email: str | None
+#     display_name: str
+#     account_type: Optional[str] = None
+#     status: str
+
 class AuthSessionOut(BaseModel):
     account_id: UUID
-    email: str | None
-    display_name: str
+    email: Optional[str] = None
+    display_name: Optional[str] = None
     account_type: Optional[str] = None
     status: str
+    # ✅ 新增這些欄位
+    cognito_sub: Optional[str] = None  # 讓前端可以儲存
+    username: Optional[str] = None      # Lambda 需要
+    id_token: Optional[str] = None      # API 認證用
+    sub: Optional[str] = None           # 備用欄位
 
+    class Config:
+        from_attributes = True
+        extra = 'allow'
 
 # --------- Invites ----------
 class InviteCreateIn(BaseModel):
