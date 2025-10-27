@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, Literal
 from uuid import UUID
 from datetime import datetime, date
 
@@ -122,28 +122,18 @@ class CrisisAlertOut(BaseModel):
 
 
 # ---------- Auth ----------
-# class AuthSessionOut(BaseModel):
-#     account_id: UUID
-#     email: str | None
-#     display_name: str
-#     account_type: Optional[str] = None
-#     status: str
-
 class AuthSessionOut(BaseModel):
     account_id: UUID
-    email: Optional[str] = None
-    display_name: Optional[str] = None
-    account_type: Optional[str] = None
+    email: str | None
+    display_name: str
+    account_type: str | None
     status: str
-    # ✅ 新增這些欄位
-    cognito_sub: Optional[str] = None  # 讓前端可以儲存
-    username: Optional[str] = None      # Lambda 需要
-    id_token: Optional[str] = None      # API 認證用
-    sub: Optional[str] = None           # 備用欄位
+    last_login_at: datetime | None
 
-    class Config:
-        from_attributes = True
-        extra = 'allow'
+# --------- Account ----------
+class AccountTypeSet(BaseModel):
+    account_type: Literal["child", "parent", "guardian"]
+
 
 # --------- Invites ----------
 class InviteCreateIn(BaseModel):
