@@ -1,79 +1,147 @@
-## MoodTra Backend
+# MoodTra Backend
 
-FastAPI backend for MoodTra: chat, mood logging, and strategy recommendations. Ships with SQL schema/seed, AI pipeline integration, and production-ready Docker image.
+This reopsitory contains comprehensive mental wellbeing support API for Australian teens (ages 13-15), providing AI wellbeing companion, mood tracking, coping strategies, and guardian-child linking capabilities.
 
-### Stack
+## Table of Contents
 
-- **API**: FastAPI (`api/main.py`) served by Uvicorn
-- **DB**: PostgreSQL (SQLAlchemy)
-- **Auth headers**: `x-account-id`, `x-session-id` (dev mocks supported)
-- **AI**: Gemini 2.5 via `google-genai`, HuggingFace `transformers` emotion model
+- [Overview](#overview)
+- [Links for MoodTra](#links-for-moodtra)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [License](#license)
 
-### Quickstart
+## Overview
 
-1. Python 3.11+ and Postgres running locally (or Docker)
-2. Create venv and install deps:
+MoodTra is a mental wellbeing platform designed to support teenagers through:
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+- **AI wellbeing companion**: Empathetic conversations using Google Gemini with emotion detection, slang interpretation, personalized coping strategies suggestions and context awareness.
+- **Mood Tracking**: Daily mood logging with emoji-based entries and calendar views
+- **Coping Strategies**: Evidence-based strategies mapped to specific emotions
+- **Guardian Linking**: Secure invite system connecting guardians with teens
+- **Crisis Detection**: Automatic detection and intervention suggestions for crisis situations, see [MoodTra_Crisis_Detection](https://github.com/Lalaires/MoodTra_Crisis_Detection) for further implemenation details
+- **Activity Tracking**: Monitor strategy usage and effectiveness
+
+## Links for MoodTra
+- Website: [MoodTra](https://moodtra.tech/)
+- GitHub Repositories:
+    - [MoodTra_Frontend](https://github.com/yihui1306/mindPal-frontend)
+    - MoodTra_Backend - Current Repo
+    - [MoodTra_Crisis_Detection](https://github.com/Lalaires/MoodTra_Crisis_Detection)
+
+## Features
+
+### Core Capabilities
+
+- 🤖 **Intelligent Chat Assistant**: Age-appropriate, empathetic AI responses using Gemini 2.5 Flash
+- 🌐 **Multi-Emotion Detection**: Advanced sentiment analysis using DistilRoBERTa
+- 🎯 **Personalized Strategies**: Emotion-specific coping strategies with instructions
+- 🚨 **Crisis Support**: Automatic detection with severity-based intervention strategies
+- 👨‍👩‍👧 **Guardian Portal**: Secure linking system for parent/guardian oversight
+- 📊 **Mood Analytics**: Track moods with weekly/monthly summaries and trend analysis
+- 📝 **Activity Logging**: Track strategy usage and outcomes
+
+### AI/ML Features
+
+- End-to-end NLP pipeline including:
+    - Emotion classification (7 emotions: joy, sadness, anger, fear, surprise, disgust, neutral)
+    - Gen-Z slang detection and interpretation
+    - Context-aware conversation history
+    - Coping stretegy retrival and suggestion based on deteacted emotion
+    - Crisis signal detection in chat patterns, see [MoodTra_Crisis_Detection](https://github.com/Lalaires/MoodTra_Crisis_Detection) for further implemenation details
+
+## Tech Stack
+
+### Backend Framework
+- **FastAPI** - Modern Python web framework
+- **Uvicorn** - ASGI server
+- **SQLAlchemy** - ORM and database toolkit
+- **Pydantic** - Data validation
+
+### Database
+- **PostgreSQL 16** - Primary data store
+- **asyncpg** - Async PostgreSQL driver
+
+### AI/ML
+- **Google Gemini 2.5 Flash** - Conversational AI
+- **Transformers** (Emotion English DistilRoBERTa-base) - Emotion detection model
+- **PyTorch** - ML framework (CPU optimized)
+
+### Authentication
+- **AWS Cognito** - User authentication
+- **python-jose** - JWT token handling
+- **OAuth 2.0** (Authorization Code + PKCE)
+
+### Cloud & Infrastructure
+- **Docker** - Containerization
+- **AWS Lambda** - Serverless deployment (with Lambda Web Adapter)
+- **AWS ECR** - Container registry
+- **boto3** - AWS SDK
+
+## Project Structure
+
+```
+MoodTra_Backend/
+├── AI/
+│   ├── __init__.py
+│   └── pipeline.py              # AI/ML pipeline (emotion detection, chat)
+├── api/
+│   ├── __init__.py
+│   ├── main.py                  # FastAPI app initialization
+│   ├── bootstrap.py             # Runtime setup
+│   ├── db.py                    # Database connection
+│   ├── deps.py                  # FastAPI dependencies
+│   ├── models.py                # SQLAlchemy models
+│   ├── schemas.py               # Pydantic schemas
+│   ├── utils.py                 # Utility functions
+│   ├── auth/                    # Authentication utilities
+│   └── routers/                 # API endpoints
+│       ├── accounts.py          # Account management
+│       ├── activity.py          # Activity tracking
+│       ├── auth_session.py      # Cognito authentication
+│       ├── chat.py               # AI chat endpoint
+│       ├── chat_session.py      # Chat session management
+│       ├── crisis.py            # Crisis alerts
+│       ├── invites.py           # Guardian invitations
+│       ├── links.py             # Guardian-child linking
+│       ├── mood.py              # Mood logging
+│       ├── strategy_emotion.py  # Coping strategies
+│       └── wellbeing.py         # Parent communication tips
+├── sql/
+│   ├── schema.sql               # Database schema
+│   ├── seed.sql                 # Seed data
+│   ├── strategy.csv             # Coping strategies data
+│   ├── strategy_emotion.csv     # Strategy-emotion mappings
+│   ├── strategy_parent_conv_tip.csv
+│   └── wellbeing_conv_tip.csv
+├── config/                      # Configuration files
+├── docker_scripts/              # Docker helper scripts
+├── Dockerfile                   # Container definition
+├── requirements.txt             # Python dependencies
+└── README.md
 ```
 
-3. Set environment variables (see Env vars).
-4. Run API:
+## Prerequisites
 
-```bash
-fastapi dev api/main.py
-```
+- **Python 3.11+** (3.12 recommended)
+- **Docker Desktop** or Docker CLI
+- **PostgreSQL 16** (via Docker or local)
+- **Git**
+- **AWS Account** (for Cognito and deployment)
+- **Google AI API Key** (for Gemini)
 
-Open Swagger at http://127.0.0.1:8000/docs
+## Support
 
-### Env vars
+For issues, questions, or collaboration requests:
+- Contact the development team - 📧 Email: claireaus066@gmail.com
+- Check existing documentation in `/README_*.txt` files
 
-- **DATABASE_URL**: SQLAlchemy URL to Postgres (required)
-- **GOOGLE_API_KEY**: Required for AI `AI/pipeline.py`
-- Optional (Cognito verification if used): `COGNITO_USER_POOL_ID`, `COGNITO_REGION`, `COGNITO_AUDIENCE`
+## License
 
-### API overview
+See `LICENSE` file for details.
 
-- `GET /health`: liveness check
-- `POST /api/chat`: chat with AI; requires `x-account-id` and `x-session-id`
-- `GET /strategy`: list all strategies
-- `GET /strategy/emojis/{emoji}`: strategies for a specific emotion
-- `POST /activity`, `PATCH /activity/{id}`, `GET /activity`: manage selected strategies
-- `POST /mood/entries`, `PATCH /mood/entries/{date}`, `DELETE /mood/entries/{date}`: manage moodlog
-- `GET /mood/entries`, `GET /mood/summary/weekly`, `GET /mood/summary/monthly`: manage emotion report
+---
 
-Headers commonly required:
-
-```text (mock data)
-x-account-id: 00000000-0000-0000-0000-00000000C0DE
-x-session-id: 11111111-1111-1111-1111-111111111111
-```
-
-### Project layout
-
-```text
-api/
-  main.py              # FastAPI app and CORS
-  db.py                # SQLAlchemy engine (uses DATABASE_URL)
-  deps.py              # DI: db, account/session headers (mockable)
-  routers/             # chat, mood, activity, strategy, etc.
-AI/
-  pipeline.py          # Gemini + transformers emotion detection
-sql/
-  schema.sql, seed.sql # DB schema and seed data
-```
-
-### Notes
-
-- Swagger is at `/docs`. CORS allows `localhost:3000` and production domains.
-- AI requires `GOOGLE_API_KEY`. HuggingFace models download at runtime; caches redirected to tmp in Docker.
-- For date ranges, weekly/monthly summaries are inclusive of the anchor date.
-
-### License
-
-See `LICENSE`.
+**Built with ❤️ for Australian teens' mental wellbeing**
 
