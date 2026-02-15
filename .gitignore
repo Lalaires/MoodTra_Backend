@@ -2,7 +2,7 @@
 .vscode
 docker_scripts
 ecr_cred
-.github/
+# .github/
 .env.example
 
 
