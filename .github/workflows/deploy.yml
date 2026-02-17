@@ -1,4 +1,4 @@
-name: Deploy MindPal Backend (main → AWS Lambda)
+name: Deploy MoodTra Backend (main → AWS Lambda)
 
 on:
   push:
@@ -40,23 +40,6 @@ jobs:
           aws ecr describe-repositories --repository-names "${{ env.ECR_REPOSITORY }}" >/dev/null 2>&1 || \
           aws ecr create-repository --repository-name "${{ env.ECR_REPOSITORY }}"
 
-      # - name: Build image
-      #   id: build
-      #   run: |
-      #     IMAGE_TAG=sha-${GITHUB_SHA::12}
-      #     REG="${{ steps.ecr.outputs.registry }}"
-      #     IMAGE_URI="${REG}/${{ env.ECR_REPOSITORY }}:${IMAGE_TAG}"
-      #     IMAGE_URI_LATEST="${REG}/${{ env.ECR_REPOSITORY }}:latest"
-      #     echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
-      #     echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_OUTPUT
-      #     echo "IMAGE_URI_LATEST=$IMAGE_URI_LATEST" >> $GITHUB_OUTPUT
-      #     docker build --platform linux/amd64 -t "$IMAGE_URI" -t "$IMAGE_URI_LATEST" .
-
-      # - name: Push image
-      #   run: |
-      #     docker push "${{ steps.build.outputs.IMAGE_URI }}"
-      #     docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
-
       - name: Build and push
         id: build_push
         uses: docker/build-push-action@v5
@@ -71,5 +54,5 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-            --image-uri "${{ steps.build_push.outputs.registry }}/moodtra_backend:latest" \
+            --image-uri "${{ steps.ecr.outputs.registry }}/moodtra_backend:latest" \
             --publish
