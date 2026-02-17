@@ -67,9 +67,9 @@ jobs:
           platforms: linux/amd64 
           provenance: false
 
-      - name: Update function code
+      - name: Update Lambda Function Code
         run: |
           aws lambda update-function-code \
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-            --image-uri "${{ steps.build_push.outputs.IMAGE_URI }}" \
+            --image-uri "${{ steps.build_push.outputs.registry }}/moodtra_backend:latest" \
             --publish
