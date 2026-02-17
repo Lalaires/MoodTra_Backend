@@ -1,9 +1,6 @@
-# # Base image for Python
-# FROM python:3.12-slim
-
 FROM public.ecr.aws/lambda/python:3.12
 
-# Add AWS Lambda Web Adapter (no code changes in FastAPI needed)
+# Add AWS Lambda Web Adapter
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt/extensions/lambda-adapter
 
 ENV PIP_NO_CACHE_DIR=1 \
@@ -16,20 +13,19 @@ ENV PIP_NO_CACHE_DIR=1 \
     TORCH_HOME=/tmp/torch \
     NLTK_DATA=/tmp/nltk_data \
     MPLCONFIGDIR=/tmp/matplotlib \
-    NUMBA_CACHE_DIR=/tmp/numba_cache
+    NUMBA_CACHE_DIR=/tmp/numba_cache \
+    PORT=8000
 
-WORKDIR /app
+# λ MUST run from /var/task
+WORKDIR ${LAMBDA_TASK_ROOT}
 
 # Install dependencies
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
-COPY ./api /app/api
-COPY ./AI  /app/AI
+COPY api ./api
+COPY AI  ./AI
 
-# The web adapter forwards requests to this port
-ENV PORT=8000
-
-# Run Uvicorn; the adapter proxies API Gateway/Function URL to this server
+# Run Uvicorn; web adapter handles Lambda events
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
