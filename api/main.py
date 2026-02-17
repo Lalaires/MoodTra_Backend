@@ -6,7 +6,7 @@ from api.bootstrap import prepare_runtime_tmp
 
 prepare_runtime_tmp()
 
-app = FastAPI(title="MindPal API", version="1.0.0")
+app = FastAPI(title="MoodTra API", version="1.0.0")
 
 ALLOWED_ORIGINS = [
     "http://localhost:3000",
