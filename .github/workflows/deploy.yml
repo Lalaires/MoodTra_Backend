@@ -71,5 +71,5 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-            --image-uri "${{ steps.build_push.outputs.registry }}/moodtra_backend:latest" \
+            --image-uri "${{ steps.ecr.outputs.registry }}/moodtra_backend:latest" \
             --publish
