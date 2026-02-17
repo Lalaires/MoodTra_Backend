@@ -16,9 +16,9 @@ concurrency:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  # BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}
-  # LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # 3007
-  # LAMBDA_TIMEOUT: ${{ secrets.LAMBDA_TIMEOUT }}           # 60
+  BASE_FUNCTION_NAME: ${{ secrets.BASE_FUNCTION_NAME }}
+  LAMBDA_MEMORY_SIZE: ${{ secrets.LAMBDA_MEMORY_SIZE }}   # 3007
+  LAMBDA_TIMEOUT: ${{ secrets.LAMBDA_TIMEOUT }}           # 60
 
 jobs:
   deploy:
@@ -57,9 +57,9 @@ jobs:
           docker push "${{ steps.build.outputs.IMAGE_URI }}"
           docker push "${{ steps.build.outputs.IMAGE_URI_LATEST }}"
 
-      # - name: Update function code
-      #   run: |
-      #     aws lambda update-function-code \
-      #       --function-name "${{ env.BASE_FUNCTION_NAME }}" \
-      #       --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
-      #       --publish
+      - name: Update function code
+        run: |
+          aws lambda update-function-code \
+            --function-name "${{ env.BASE_FUNCTION_NAME }}" \
+            --image-uri "${{ steps.build.outputs.IMAGE_URI }}" \
+            --publish
