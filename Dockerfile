@@ -1,5 +1,7 @@
-# Base image for Python
-FROM python:3.12-slim
+# # Base image for Python
+# FROM python:3.12-slim
+
+FROM public.ecr.aws/lambda/python:3.12
 
 # Add AWS Lambda Web Adapter (no code changes in FastAPI needed)
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.4 /lambda-adapter /opt/extensions/lambda-adapter
